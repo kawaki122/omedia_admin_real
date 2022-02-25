@@ -3,14 +3,14 @@ import { Typography, Table, Avatar, Row, Col, message, Spin, Popconfirm } from '
 import {
     PlusOutlined
 } from '@ant-design/icons';
-import UpsertBrand from './UpsertBrand';
-import { deleteBrand, getBrands } from '../services/brandService';
+import { deleteClient, getBrands, getClients } from '../services/brandService';
 import { urlHelper } from '../utils/UrlHelper';
 import Delete from '../common/Delete';
+import UpsertClient from './UpsertClient';
 
 const { Title } = Typography;
 
-function Brand() {
+function Client() {
     const [state, setState] = useState({
         data: [],
         loading: true,
@@ -19,37 +19,37 @@ function Brand() {
     })
     useEffect(() => {
         setState(prev => ({ ...prev, loading: true }))
-        getBrands().then(data => {
+        getClients().then(data => {
             setState(prev => ({ ...prev, data: data.data, loading: false }))
         }).catch(e => {
             setState(prev => ({ ...prev, loading: false }))
         })
     }, [])
 
-    const handleRemove = (brand) => {
-        setState(prev => ({ ...prev, deleting: true, selected: brand._id }))
-        deleteBrand(brand._id).then(data => {
-            message.success(`Brand ${brand.title} deleted successfully!`);
+    const handleRemove = (client) => {
+        setState(prev => ({ ...prev, deleting: true, selected: client._id }))
+        deleteClient(client._id).then(data => {
+            message.success(`Client ${client.name} deleted successfully!`);
             setState(prev => ({
                 ...prev, deleting: false,
                 selected: null,
-                data: prev.data.filter(item => item._id !== brand._id)
+                data: prev.data.filter(item => item._id !== client._id)
             }))
         }).catch(e => {
-            message.error(`Error while deleting ${brand.title}`);
+            message.error(`Error while deleting ${client.name}`);
             setState(prev => ({ ...prev, deleting: false, selected: null }))
         })
     }
 
-    const handleCreate = (brand) => {
-        setState(prev => ({ ...prev, data: [...prev.data, brand] }))
+    const handleCreate = (client) => {
+        setState(prev => ({ ...prev, data: [...prev.data, client] }))
     }
 
-    const handleUpdate = (brand) => {
+    const handleUpdate = (client) => {
         setState(prev => {
             const newData = [...prev.data]
-            const index = newData.findIndex(item => item._id === brand._id)
-            newData[index] = brand;
+            const index = newData.findIndex(item => item._id === client._id)
+            newData[index] = client;
             return {
                 ...prev,
                 data: newData,
@@ -61,20 +61,20 @@ function Brand() {
         <div>
             <Row justify="space-between">
                 <Col flex={0}>
-                    <Title level={2}>Brands</Title>
+                    <Title level={2}>Clients</Title>
                 </Col>
                 <Col flex={0}>
-                    <UpsertBrand onCreate={handleCreate} initValues={null}>
+                    <UpsertClient onCreate={handleCreate} initValues={null}>
                         <PlusOutlined /> Add New
-                    </UpsertBrand>
+                    </UpsertClient>
                 </Col>
             </Row>
             <Table columns={[
                 {
-                    title: 'Brand',
-                    dataIndex: 'title',
-                    key: 'title',
-                    render: (url, record) => <div><Avatar src={urlHelper.fileUrl(record.img)} /> {record.title}</div>
+                    title: 'Client',
+                    dataIndex: 'name',
+                    key: 'name',
+                    render: (url, record) => <div><Avatar src={urlHelper.fileUrl(record.img)} /> {record.name}</div>
                 },
                 {
                     title: 'Action',
@@ -86,9 +86,9 @@ function Brand() {
                                 deleting={state.deleting && record._id === state.selected}
                             />
                             |
-                            <UpsertBrand initValues={record} onCreate={handleUpdate}>
+                            <UpsertClient initValues={record} onCreate={handleUpdate}>
                                 Edit
-                            </UpsertBrand>
+                            </UpsertClient>
                         </>
                     },
                 },
@@ -97,4 +97,4 @@ function Brand() {
     );
 }
 
-export default Brand;
+export default Client;

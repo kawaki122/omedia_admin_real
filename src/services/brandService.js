@@ -12,3 +12,15 @@ export const addBrand = (body) => {
 export const deleteBrand = (id) => {
     return axios.delete(urlHelper.brandUrl+'?id='+id)
 }
+
+export const getClients = () => {
+    return axios.get(urlHelper.clientUrl)
+}
+
+export const addClient = (body) => {
+    return axios.patch(urlHelper.clientUrl, body)
+}
+
+export const deleteClient = (id) => {
+    return axios.delete(urlHelper.clientUrl+'?id='+id)
+}

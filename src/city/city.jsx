@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Table, Avatar, Row, Col, message, Spin, Popconfirm } from 'antd';
+import { Typography, Table, Row, Col, message } from 'antd';
 import {
     PlusOutlined
 } from '@ant-design/icons';
-import UpsertBrand from './UpsertBrand';
-import { deleteBrand, getBrands } from '../services/brandService';
-import { urlHelper } from '../utils/UrlHelper';
 import Delete from '../common/Delete';
+import { deleteCity, getCities } from '../services/cityService';
+import UpsertCity from './UpsertCity';
 
 const { Title } = Typography;
 
-function Brand() {
+function City() {
     const [state, setState] = useState({
         data: [],
         loading: true,
@@ -19,37 +18,37 @@ function Brand() {
     })
     useEffect(() => {
         setState(prev => ({ ...prev, loading: true }))
-        getBrands().then(data => {
+        getCities().then(data => {
             setState(prev => ({ ...prev, data: data.data, loading: false }))
         }).catch(e => {
             setState(prev => ({ ...prev, loading: false }))
         })
     }, [])
 
-    const handleRemove = (brand) => {
-        setState(prev => ({ ...prev, deleting: true, selected: brand._id }))
-        deleteBrand(brand._id).then(data => {
-            message.success(`Brand ${brand.title} deleted successfully!`);
+    const handleRemove = (city) => {
+        setState(prev => ({ ...prev, deleting: true, selected: city._id }))
+        deleteCity(city._id).then(data => {
+            message.success(`City ${city.title} deleted successfully!`);
             setState(prev => ({
                 ...prev, deleting: false,
                 selected: null,
-                data: prev.data.filter(item => item._id !== brand._id)
+                data: prev.data.filter(item => item._id !== city._id)
             }))
         }).catch(e => {
-            message.error(`Error while deleting ${brand.title}`);
+            message.error(`Error while deleting ${city.title}`);
             setState(prev => ({ ...prev, deleting: false, selected: null }))
         })
     }
 
-    const handleCreate = (brand) => {
-        setState(prev => ({ ...prev, data: [...prev.data, brand] }))
+    const handleCreate = (city) => {
+        setState(prev => ({ ...prev, data: [...prev.data, city] }))
     }
 
-    const handleUpdate = (brand) => {
+    const handleUpdate = (city) => {
         setState(prev => {
             const newData = [...prev.data]
-            const index = newData.findIndex(item => item._id === brand._id)
-            newData[index] = brand;
+            const index = newData.findIndex(item => item._id === city._id)
+            newData[index] = city;
             return {
                 ...prev,
                 data: newData,
@@ -61,20 +60,19 @@ function Brand() {
         <div>
             <Row justify="space-between">
                 <Col flex={0}>
-                    <Title level={2}>Brands</Title>
+                    <Title level={2}>Cities</Title>
                 </Col>
                 <Col flex={0}>
-                    <UpsertBrand onCreate={handleCreate} initValues={null}>
+                    <UpsertCity onCreate={handleCreate} initValues={null}>
                         <PlusOutlined /> Add New
-                    </UpsertBrand>
+                    </UpsertCity>
                 </Col>
             </Row>
             <Table columns={[
                 {
-                    title: 'Brand',
+                    title: 'City',
                     dataIndex: 'title',
                     key: 'title',
-                    render: (url, record) => <div><Avatar src={urlHelper.fileUrl(record.img)} /> {record.title}</div>
                 },
                 {
                     title: 'Action',
@@ -86,9 +84,9 @@ function Brand() {
                                 deleting={state.deleting && record._id === state.selected}
                             />
                             |
-                            <UpsertBrand initValues={record} onCreate={handleUpdate}>
+                            <UpsertCity initValues={record} onCreate={handleUpdate}>
                                 Edit
-                            </UpsertBrand>
+                            </UpsertCity>
                         </>
                     },
                 },
@@ -97,4 +95,4 @@ function Brand() {
     );
 }
 
-export default Brand;
+export default City;

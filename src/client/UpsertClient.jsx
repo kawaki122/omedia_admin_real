@@ -4,44 +4,44 @@ import {
     PlusOutlined,
     LoadingOutlined
 } from '@ant-design/icons';
-import { addBrand } from '../services/brandService';
+import { addClient } from '../services/brandService';
 import { urlHelper } from '../utils/UrlHelper';
 
-function UpsertBrand({ onCreate, initValues, children}) {
+function UpsertClient({ onCreate, initValues, children}) {
     const [form] = Form.useForm()
     const [state, setState] = useState({
         visible: false,
         confirming: false,
         imgUrl: '',
-        brandId: '',
+        clientId: '',
         loading: false,
     });
 
     const showModal = () => {
         if(initValues) {
-            form.setFieldsValue({title: initValues.title});
+            form.setFieldsValue({name: initValues.name});
         }
         setState(prev => ({
             ...prev,
             visible: true,
-            ...(initValues && {imgUrl: initValues.img, brandId: initValues._id})
+            ...(initValues && {imgUrl: initValues.img, clientId: initValues._id})
         }));
     };
 
     const handleOk = (values) => {
         setState(prev => ({ ...prev, confirming: true }));
-        addBrand({
-            title: values.title,
+        addClient({
+            name: values.name,
             img: state.imgUrl,
-            brandId: state.brandId
+            clientId: state.clientId
         }).then(data => {
-            message.success(`Brand ${values.title} ${state.brandId?'updated':'added'} successfully`);
+            message.success(`Client ${values.name} ${state.clientId?'updated':'added'} successfully`);
             onCreate(data.data)
             form.resetFields()
             setState(prev => ({ ...prev, confirming: false, visible: false, imgUrl: '' }));
         }).catch(e => {
             console.log(e)
-            message.error("Error while adding brand");
+            message.error("Error while adding client");
             setState(prev => ({ ...prev, confirming: false }));
         })
     };
@@ -97,7 +97,7 @@ function UpsertBrand({ onCreate, initValues, children}) {
         <>
             <Button type="primary" onClick={showModal}>{children}</Button>
             <Modal
-                title="Add Brand"
+                title="Add Client"
                 visible={state.visible}
                 onCancel={handleCancel}
                 footer={null}
@@ -111,12 +111,12 @@ function UpsertBrand({ onCreate, initValues, children}) {
                     form={form}
                 >
                     <Form.Item
-                        label="Brand name"
-                        name="title"
+                        label="Client name"
+                        name="name"
                         rules={[
                             {
                                 required: true,
-                                message: 'Please input the brand name!',
+                                message: 'Please input the client name!',
                             },
                         ]}
                     >
@@ -124,12 +124,12 @@ function UpsertBrand({ onCreate, initValues, children}) {
                     </Form.Item>
 
                     <Form.Item
-                        label="Brand Logo"
+                        label="Client Logo"
                         name="file"
                         rules={[
                             {
                                 required: !Boolean(state.imgUrl),
-                                message: 'Please input brand logo!',
+                                message: 'Please input client logo!',
                             },
                         ]}
                         getValueFromEvent={getFile}
@@ -159,4 +159,4 @@ function UpsertBrand({ onCreate, initValues, children}) {
     );
 }
 
-export default UpsertBrand;
+export default UpsertClient;
