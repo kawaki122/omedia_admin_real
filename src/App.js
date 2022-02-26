@@ -7,6 +7,7 @@ import {
 import Brand from './brand/brand';
 import City from './city/city';
 import Client from './client/client';
+import Campaign from './campaign/campaign';
 
 function App() {
   return (
@@ -21,6 +22,9 @@ function App() {
         </Route>
         <Route path="/clients">
           <Client />
+        </Route>
+        <Route path="/campaigns">
+          <Campaign />
         </Route>
         </Switch>
       </SidebarLayout>

@@ -24,6 +24,9 @@ class UrlHelper {
     get clientUrl(){
         return this._baseUrl+'client'
     }
+    get campaignUrl(){
+        return this._baseUrl+'campaign'
+    }
 }
 
 export const urlHelper = new UrlHelper('http://localhost:4000/');

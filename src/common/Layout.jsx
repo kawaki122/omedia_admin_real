@@ -35,6 +35,11 @@ function SidebarLayout({ children }) {
               Clients
             </Link>
           </Menu.Item>
+          <Menu.Item key="4" icon={<BorderOuterOutlined />}>
+            <Link to='/campaigns'>
+              Campaign
+            </Link>
+          </Menu.Item>
         </Menu>
       </Sider>
       <Layout>
