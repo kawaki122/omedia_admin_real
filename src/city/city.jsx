@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Table, Row, Col, message } from 'antd';
+import { Typography, Table, Row, Col, message, Card } from 'antd';
 import {
     PlusOutlined
 } from '@ant-design/icons';
 import Delete from '../common/Delete';
 import { deleteCity, getCities } from '../services/cityService';
 import UpsertCity from './UpsertCity';
+import { useDispatch } from 'react-redux';
+import { loadCities } from '../store/actions/dashActions';
 
 const { Title } = Typography;
 
 function City() {
+    const dispatch = useDispatch()
     const [state, setState] = useState({
         data: [],
         loading: true,
@@ -17,12 +20,8 @@ function City() {
         selected: null,
     })
     useEffect(() => {
-        setState(prev => ({ ...prev, loading: true }))
-        getCities().then(data => {
-            setState(prev => ({ ...prev, data: data.data, loading: false }))
-        }).catch(e => {
-            setState(prev => ({ ...prev, loading: false }))
-        })
+        dispatch(loadCities())
+        
     }, [])
 
     const handleRemove = (city) => {
@@ -57,17 +56,10 @@ function City() {
     }
 
     return (
-        <div>
-            <Row justify="space-between">
-                <Col flex={0}>
-                    <Title level={2}>Cities</Title>
-                </Col>
-                <Col flex={0}>
-                    <UpsertCity onCreate={handleCreate} initValues={null}>
-                        <PlusOutlined /> Add New
-                    </UpsertCity>
-                </Col>
-            </Row>
+        <Card title="Cities" extra={<UpsertCity onCreate={handleCreate} initValues={null}>
+        <PlusOutlined /> Add New
+    </UpsertCity>}>
+
             <Table columns={[
                 {
                     title: 'City',
@@ -77,13 +69,14 @@ function City() {
                 {
                     title: 'Action',
                     key: 'action',
+                    align: 'right',
                     render: (text, record) => {
                         return <>
                             <Delete
                                 onDelete={() => handleRemove(record)}
                                 deleting={state.deleting && record._id === state.selected}
                             />
-                            |
+                            &nbsp;|&nbsp;
                             <UpsertCity initValues={record} onCreate={handleUpdate}>
                                 Edit
                             </UpsertCity>
@@ -91,7 +84,7 @@ function City() {
                     },
                 },
             ]} loading={state.loading} dataSource={state.data} />
-        </div>
+        </Card>
     );
 }
 

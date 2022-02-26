@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Form, Modal, Input, message } from 'antd';
+import { Button, Form, Modal, Input, message, DatePicker } from 'antd';
 import { upsertCampaign } from '../services/campaignService';
+import moment from 'moment';
+import { campaignStatusEnum } from '../utils/constants';
+const { RangePicker } = DatePicker;
 
 function UpsertCampaign({ onCreate, initValues, children}) {
     const [form] = Form.useForm()
@@ -23,9 +26,14 @@ function UpsertCampaign({ onCreate, initValues, children}) {
 
     const handleOk = (values) => {
         setState(prev => ({ ...prev, confirming: true }));
+        const [from, to] = values;
         upsertCampaign({
             title: values.title,
             campaignd: state.campaignId,
+            from: moment(from),
+            to: moment(to),
+            status: campaignStatusEnum.init,
+            // brand: string;
         }).then(data => {
             message.success(`Campaign ${values.title} ${state.campaignId?'updated':'added'} successfully`);
             onCreate(data.data)
@@ -72,6 +80,19 @@ function UpsertCampaign({ onCreate, initValues, children}) {
                         ]}
                     >
                         <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Campaign duration"
+                        name="duration"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please input the campaign duration!',
+                            },
+                        ]}
+                    >
+                        <RangePicker style={{width: '100%'}} />
                     </Form.Item>
 
                     <Form.Item

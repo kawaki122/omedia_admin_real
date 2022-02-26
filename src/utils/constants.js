@@ -4,3 +4,7 @@ export function getBase64(img, callback) {
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
 }
+
+export const campaignStatusEnum = {
+    init: 'init',
+}

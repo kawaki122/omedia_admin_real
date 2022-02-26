@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Table, Avatar, Row, Col, message, Spin, Popconfirm } from 'antd';
+import { Typography, Table, Avatar, Row, Col, message, Spin, Popconfirm, Card } from 'antd';
 import {
     PlusOutlined
 } from '@ant-design/icons';
@@ -58,17 +58,10 @@ function Client() {
     }
 
     return (
-        <div>
-            <Row justify="space-between">
-                <Col flex={0}>
-                    <Title level={2}>Clients</Title>
-                </Col>
-                <Col flex={0}>
-                    <UpsertClient onCreate={handleCreate} initValues={null}>
-                        <PlusOutlined /> Add New
-                    </UpsertClient>
-                </Col>
-            </Row>
+        <Card title="Clients" extra={<UpsertClient onCreate={handleCreate} initValues={null}>
+        <PlusOutlined /> Add New
+    </UpsertClient>}>
+
             <Table columns={[
                 {
                     title: 'Client',
@@ -79,13 +72,14 @@ function Client() {
                 {
                     title: 'Action',
                     key: 'action',
+                    align: 'right',
                     render: (text, record) => {
                         return <>
                             <Delete
                                 onDelete={() => handleRemove(record)}
                                 deleting={state.deleting && record._id === state.selected}
                             />
-                            |
+                            &nbsp;|&nbsp;
                             <UpsertClient initValues={record} onCreate={handleUpdate}>
                                 Edit
                             </UpsertClient>
@@ -93,7 +87,7 @@ function Client() {
                     },
                 },
             ]} loading={state.loading} dataSource={state.data} />
-        </div>
+        </Card>
     );
 }
 

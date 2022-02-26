@@ -95,7 +95,7 @@ function UpsertClient({ onCreate, initValues, children}) {
     
     return (
         <>
-            <Button type="primary" onClick={showModal}>{children}</Button>
+            <a type="primary" onClick={showModal}>{children}</a>
             <Modal
                 title="Add Client"
                 visible={state.visible}

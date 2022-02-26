@@ -19,23 +19,13 @@ function SidebarLayout({ children }) {
         }}
       >
         <div className="logo" />
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-          <Menu.Item key="1" icon={<BorderOuterOutlined />}>
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={['0']}>
+        <Menu.Item key="0" icon={<BorderOuterOutlined />}>
             <Link to='/'>
-              Brands
+              Dashboard
             </Link>
           </Menu.Item>
-          <Menu.Item key="2" icon={<BorderOuterOutlined />}>
-            <Link to='/cities'>
-              Cities
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="3" icon={<BorderOuterOutlined />}>
-            <Link to='/clients'>
-              Clients
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="4" icon={<BorderOuterOutlined />}>
+          <Menu.Item key="1" icon={<BorderOuterOutlined />}>
             <Link to='/campaigns'>
               Campaign
             </Link>
@@ -45,9 +35,7 @@ function SidebarLayout({ children }) {
       <Layout>
         <Header className="site-layout-sub-header-background" style={{ padding: 0 }} />
         <Content style={{ margin: '24px 16px 0' }}>
-          <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
-            {children}
-          </div>
+          {children}
         </Content>
         <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
       </Layout>

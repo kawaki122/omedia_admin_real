@@ -5,6 +5,7 @@ import {
 } from '@ant-design/icons';
 import Delete from '../common/Delete';
 import { deleteCampaign, getCampaignes } from '../services/campaignService';
+import UpsertCampaign from './UpsertCampaign';
 
 const { Title } = Typography;
 
@@ -56,10 +57,10 @@ function Campaign() {
     }
 
     return (
-        <div>
+        <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
             <Row justify="space-between">
                 <Col flex={0}>
-                    <Title level={2}>Cities</Title>
+                    <Title level={2}>Campaigns</Title>
                 </Col>
                 <Col flex={0}>
                     <UpsertCampaign onCreate={handleCreate} initValues={null}>

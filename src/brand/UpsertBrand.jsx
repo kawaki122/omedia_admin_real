@@ -95,7 +95,7 @@ function UpsertBrand({ onCreate, initValues, children}) {
     
     return (
         <>
-            <Button type="primary" onClick={showModal}>{children}</Button>
+            <a type="primary" onClick={showModal}>{children}</a>
             <Modal
                 title="Add Brand"
                 visible={state.visible}

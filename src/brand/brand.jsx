@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Table, Avatar, Row, Col, message, Spin, Popconfirm } from 'antd';
+import { Typography, Table, Avatar, Row, Col, message, Spin, Popconfirm, Card } from 'antd';
 import {
     PlusOutlined
 } from '@ant-design/icons';
@@ -58,17 +58,9 @@ function Brand() {
     }
 
     return (
-        <div>
-            <Row justify="space-between">
-                <Col flex={0}>
-                    <Title level={2}>Brands</Title>
-                </Col>
-                <Col flex={0}>
-                    <UpsertBrand onCreate={handleCreate} initValues={null}>
-                        <PlusOutlined /> Add New
-                    </UpsertBrand>
-                </Col>
-            </Row>
+        <Card title="Brands" extra={<UpsertBrand onCreate={handleCreate} initValues={null}>
+            <PlusOutlined /> Add New
+        </UpsertBrand>}>
             <Table columns={[
                 {
                     title: 'Brand',
@@ -79,13 +71,14 @@ function Brand() {
                 {
                     title: 'Action',
                     key: 'action',
+                    align: 'right',
                     render: (text, record) => {
                         return <>
                             <Delete
                                 onDelete={() => handleRemove(record)}
                                 deleting={state.deleting && record._id === state.selected}
                             />
-                            |
+                            &nbsp;|&nbsp;
                             <UpsertBrand initValues={record} onCreate={handleUpdate}>
                                 Edit
                             </UpsertBrand>
@@ -93,7 +86,7 @@ function Brand() {
                     },
                 },
             ]} loading={state.loading} dataSource={state.data} />
-        </div>
+        </Card>
     );
 }
 

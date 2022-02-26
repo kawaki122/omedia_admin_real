@@ -4,32 +4,26 @@ import {
   Switch,
   Route
 } from "react-router-dom";
-import Brand from './brand/brand';
-import City from './city/city';
-import Client from './client/client';
 import Campaign from './campaign/campaign';
+import { Dashboard } from './dashboard/dashboard';
+import { Provider } from 'react-redux';
+import store from './store/reducers/store';
 
 function App() {
-  return (
+  return <Provider store={store}>
     <Router>
-    <SidebarLayout>
-      <Switch>
-        <Route exact path="/">
-          <Brand />
-        </Route>
-        <Route path="/cities">
-          <City />
-        </Route>
-        <Route path="/clients">
-          <Client />
-        </Route>
-        <Route path="/campaigns">
-          <Campaign />
-        </Route>
+      <SidebarLayout>
+        <Switch>
+          <Route exact path="/">
+            <Dashboard />
+          </Route>
+          <Route path="/campaigns">
+            <Campaign />
+          </Route>
         </Switch>
       </SidebarLayout>
-  </Router>
-  );
+    </Router>
+  </Provider>
 }
 
 export default App;
