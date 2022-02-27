@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { Button, Form, Modal, Input, message, DatePicker } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Modal, Input, message, DatePicker, Select } from 'antd';
 import { upsertCampaign } from '../services/campaignService';
 import moment from 'moment';
 import { campaignStatusEnum } from '../utils/constants';
+import { useSelector } from 'react-redux';
 const { RangePicker } = DatePicker;
 
-function UpsertCampaign({ onCreate, initValues, children}) {
+function UpsertCampaign({ onCreate, initValues, children }) {
     const [form] = Form.useForm()
+    const brandInfo = useSelector(item => item.dashboard.brand)
     const [state, setState] = useState({
         visible: false,
         confirming: false,
@@ -14,28 +16,36 @@ function UpsertCampaign({ onCreate, initValues, children}) {
     });
 
     const showModal = () => {
-        if(initValues) {
-            form.setFieldsValue({title: initValues.title});
+        if (initValues) {
+            form.setFieldsValue({
+                title: initValues.title,
+                brand: initValues.brand._id,
+                duration: [
+                    moment(initValues.from),
+                    moment(initValues.to)
+                ]
+            });
         }
         setState(prev => ({
             ...prev,
             visible: true,
-            ...(initValues && {campaignId: initValues._id})
+            ...(initValues && { campaignId: initValues._id })
         }));
     };
 
     const handleOk = (values) => {
         setState(prev => ({ ...prev, confirming: true }));
-        const [from, to] = values;
+        const [from, to] = values.duration;
+
         upsertCampaign({
             title: values.title,
-            campaignd: state.campaignId,
+            campaignId: state.campaignId,
             from: moment(from),
             to: moment(to),
             status: campaignStatusEnum.init,
-            // brand: string;
+            brand: values.brand,
         }).then(data => {
-            message.success(`Campaign ${values.title} ${state.campaignId?'updated':'added'} successfully`);
+            message.success(`Campaign ${values.title} ${state.campaignId ? 'updated' : 'added'} successfully`);
             onCreate(data.data)
             form.resetFields()
             setState(prev => ({ ...prev, confirming: false, visible: false }));
@@ -54,7 +64,7 @@ function UpsertCampaign({ onCreate, initValues, children}) {
 
     return (
         <>
-            <Button type="primary" onClick={showModal}>{children}</Button>
+            <a type="primary" onClick={showModal}>{children}</a>
             <Modal
                 title="Add Campaign"
                 visible={state.visible}
@@ -83,6 +93,25 @@ function UpsertCampaign({ onCreate, initValues, children}) {
                     </Form.Item>
 
                     <Form.Item
+                        label="Brand"
+                        name="brand"
+                        initialValue={''}
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please select a brand!',
+                            },
+                        ]}
+                    >
+                        <Select>
+                            <Select.Option value="">Select a Brand</Select.Option>
+                            {brandInfo.data.map(item => <Select.Option value={item._id}>
+                                {item.title}
+                            </Select.Option>)}
+                        </Select>
+                    </Form.Item>
+
+                    <Form.Item
                         label="Campaign duration"
                         name="duration"
                         rules={[
@@ -92,7 +121,7 @@ function UpsertCampaign({ onCreate, initValues, children}) {
                             },
                         ]}
                     >
-                        <RangePicker style={{width: '100%'}} />
+                        <RangePicker style={{ width: '100%' }} />
                     </Form.Item>
 
                     <Form.Item

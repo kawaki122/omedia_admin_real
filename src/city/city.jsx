@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Table, Row, Col, message, Card } from 'antd';
+import { Table, message, Card } from 'antd';
 import {
     PlusOutlined
 } from '@ant-design/icons';
@@ -8,30 +8,31 @@ import { deleteCity, getCities } from '../services/cityService';
 import UpsertCity from './UpsertCity';
 import { useDispatch } from 'react-redux';
 import { loadCities } from '../store/actions/dashActions';
-
-const { Title } = Typography;
+import { useSelector } from 'react-redux';
+import { setCitiesSuccess } from '../store/reducers/dashSlice';
 
 function City() {
     const dispatch = useDispatch()
+    const cityInfo = useSelector(state => state.dashboard.city)
     const [state, setState] = useState({
-        data: [],
-        loading: true,
         deleting: false,
         selected: null,
     })
+
     useEffect(() => {
-        dispatch(loadCities())
-        
+        if(!cityInfo.data.length) {
+            dispatch(loadCities())
+        }
     }, [])
 
     const handleRemove = (city) => {
         setState(prev => ({ ...prev, deleting: true, selected: city._id }))
         deleteCity(city._id).then(data => {
             message.success(`City ${city.title} deleted successfully!`);
+            dispatch(setCitiesSuccess(cityInfo.data.filter(item => item._id !== city._id)))
             setState(prev => ({
                 ...prev, deleting: false,
                 selected: null,
-                data: prev.data.filter(item => item._id !== city._id)
             }))
         }).catch(e => {
             message.error(`Error while deleting ${city.title}`);
@@ -40,25 +41,20 @@ function City() {
     }
 
     const handleCreate = (city) => {
-        setState(prev => ({ ...prev, data: [...prev.data, city] }))
+        dispatch(setCitiesSuccess([...cityInfo.data, city]))
     }
 
     const handleUpdate = (city) => {
-        setState(prev => {
-            const newData = [...prev.data]
-            const index = newData.findIndex(item => item._id === city._id)
-            newData[index] = city;
-            return {
-                ...prev,
-                data: newData,
-            }
-        })
+        const newData = [...cityInfo.data]
+        const index = newData.findIndex(item => item._id === city._id)
+        newData[index] = city;
+        dispatch(setCitiesSuccess(newData))
     }
 
     return (
         <Card title="Cities" extra={<UpsertCity onCreate={handleCreate} initValues={null}>
-        <PlusOutlined /> Add New
-    </UpsertCity>}>
+            <PlusOutlined /> Add New
+        </UpsertCity>}>
 
             <Table columns={[
                 {
@@ -83,7 +79,7 @@ function City() {
                         </>
                     },
                 },
-            ]} loading={state.loading} dataSource={state.data} />
+            ]} loading={cityInfo.loading} dataSource={cityInfo.data} />
         </Card>
     );
 }

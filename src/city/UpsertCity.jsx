@@ -25,7 +25,7 @@ function UpsertCity({ onCreate, initValues, children}) {
         setState(prev => ({ ...prev, confirming: true }));
         upsertCity({
             title: values.title,
-            cityd: state.cityId,
+            cityId: state.cityId,
         }).then(data => {
             message.success(`City ${values.title} ${state.cityId?'updated':'added'} successfully`);
             onCreate(data.data)

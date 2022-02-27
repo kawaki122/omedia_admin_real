@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Table, Row, Col, message } from 'antd';
+import { Typography, Table, Row, Col, message, Avatar } from 'antd';
 import {
     PlusOutlined
 } from '@ant-design/icons';
 import Delete from '../common/Delete';
 import { deleteCampaign, getCampaignes } from '../services/campaignService';
 import UpsertCampaign from './UpsertCampaign';
+import moment from 'moment';
+import { urlHelper } from '../utils/UrlHelper';
 
 const { Title } = Typography;
 
@@ -73,17 +75,42 @@ function Campaign() {
                     title: 'Campaign',
                     dataIndex: 'title',
                     key: 'title',
+                    render: (text, record) => {
+                        return <div><Avatar src={urlHelper.fileUrl(record.brand.img)} /> {record.title}</div>
+                    }
+                },
+                {
+                    title: 'From',
+                    dataIndex: 'from',
+                    key: 'from',
+                    render: (text) => {
+                        return moment(text).format('DD:MM:YYYY')
+                    }
+                },
+                {
+                    title: 'To',
+                    dataIndex: 'to',
+                    key: 'to',
+                    render: (text) => {
+                        return moment(text).format('DD:MM:YYYY')
+                    }
+                },
+                {
+                    title: 'Status',
+                    dataIndex: 'status',
+                    key: 'status',
                 },
                 {
                     title: 'Action',
                     key: 'action',
+                    align: 'right',
                     render: (text, record) => {
                         return <>
                             <Delete
                                 onDelete={() => handleRemove(record)}
                                 deleting={state.deleting && record._id === state.selected}
                             />
-                            |
+                            &nbsp;|&nbsp;
                             <UpsertCampaign initValues={record} onCreate={handleUpdate}>
                                 Edit
                             </UpsertCampaign>

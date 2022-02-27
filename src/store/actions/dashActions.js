@@ -1,20 +1,40 @@
+import { getBrands, getClients } from "../../services/brandService";
 import { getCities } from "../../services/cityService";
-
-export const SET_CITIES_LOADING = 'SET_CITIES_LOADING';
-export const CITIES_LOADED_SUCCESS = 'CITIES_LOADED_SUCCESS';
-
-export const SET_BRANDS_LOADING = 'SET_BRANDS_LOADING';
-export const BRANDS_LOADED_SUCCESS = 'BRANDS_LOADED_SUCCESS';
-
-export const SET_CLIENTS_LOADING = 'SET_CLIENTS_LOADING';
-export const CLIENTS_LOADED_SUCCESS = 'CLIENTS_LOADED_SUCCESS';
+import { 
+    setBrandsLoading,
+    setBrandsSuccess,
+    setCitiesLoading,
+    setCitiesSuccess,
+    setClientsLoading,
+    setClientsSuccess,
+} from "../reducers/dashSlice";
 
 export const loadCities = () => dispatch => {
-    dispatch({type: SET_CITIES_LOADING, payload: true})
+    dispatch(setCitiesLoading(true))
 
     getCities().then(data => {
-        dispatch({type: CITIES_LOADED_SUCCESS, payload: data.data})
+        dispatch(setCitiesSuccess(data.data))
     }).catch(e => {
-        dispatch({type: SET_CITIES_LOADING, payload: true})
+        dispatch(setCitiesLoading(false))
+    })
+}
+
+export const loadBrands = () => dispatch => {
+    dispatch(setBrandsLoading(true))
+
+    getBrands().then(data => {
+        dispatch(setBrandsSuccess(data.data))
+    }).catch(e => {
+        dispatch(setBrandsLoading(false))
+    })
+}
+
+export const loadClients = () => dispatch => {
+    dispatch(setClientsLoading(true))
+
+    getClients().then(data => {
+        dispatch(setClientsSuccess(data.data))
+    }).catch(e => {
+        dispatch(setClientsLoading(false))
     })
 }

@@ -1,39 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Table, Avatar, Row, Col, message, Spin, Popconfirm, Card } from 'antd';
+import { Table, Avatar, message, Card } from 'antd';
 import {
     PlusOutlined
 } from '@ant-design/icons';
 import UpsertBrand from './UpsertBrand';
-import { deleteBrand, getBrands } from '../services/brandService';
+import { deleteBrand } from '../services/brandService';
 import { urlHelper } from '../utils/UrlHelper';
 import Delete from '../common/Delete';
+import { loadBrands } from '../store/actions/dashActions';
+import { useDispatch, useSelector } from 'react-redux';
+import { setBrandsSuccess } from '../store/reducers/dashSlice';
 
-const { Title } = Typography;
 
 function Brand() {
+    const dispatch = useDispatch()
+    const brandInfo = useSelector(state => state.dashboard.brand)
     const [state, setState] = useState({
-        data: [],
-        loading: true,
         deleting: false,
         selected: null,
     })
     useEffect(() => {
-        setState(prev => ({ ...prev, loading: true }))
-        getBrands().then(data => {
-            setState(prev => ({ ...prev, data: data.data, loading: false }))
-        }).catch(e => {
-            setState(prev => ({ ...prev, loading: false }))
-        })
+        if(!brandInfo.data.length){
+            dispatch(loadBrands())
+        }
     }, [])
 
     const handleRemove = (brand) => {
         setState(prev => ({ ...prev, deleting: true, selected: brand._id }))
         deleteBrand(brand._id).then(data => {
             message.success(`Brand ${brand.title} deleted successfully!`);
+            dispatch(setBrandsSuccess(brandInfo.data.filter(item => item._id !== brand._id)))
             setState(prev => ({
                 ...prev, deleting: false,
                 selected: null,
-                data: prev.data.filter(item => item._id !== brand._id)
             }))
         }).catch(e => {
             message.error(`Error while deleting ${brand.title}`);
@@ -42,19 +41,14 @@ function Brand() {
     }
 
     const handleCreate = (brand) => {
-        setState(prev => ({ ...prev, data: [...prev.data, brand] }))
+        dispatch(setBrandsSuccess([...brandInfo.data, brand]))
     }
 
     const handleUpdate = (brand) => {
-        setState(prev => {
-            const newData = [...prev.data]
-            const index = newData.findIndex(item => item._id === brand._id)
-            newData[index] = brand;
-            return {
-                ...prev,
-                data: newData,
-            }
-        })
+        const newData = [...brandInfo.data]
+        const index = newData.findIndex(item => item._id === brand._id)
+        newData[index] = brand;
+        dispatch(setBrandsSuccess(newData))
     }
 
     return (
@@ -85,7 +79,7 @@ function Brand() {
                         </>
                     },
                 },
-            ]} loading={state.loading} dataSource={state.data} />
+            ]} loading={brandInfo.loading} dataSource={brandInfo.data} />
         </Card>
     );
 }

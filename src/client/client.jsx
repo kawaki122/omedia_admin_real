@@ -1,39 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Table, Avatar, Row, Col, message, Spin, Popconfirm, Card } from 'antd';
+import { Table, Avatar, message, Card } from 'antd';
 import {
     PlusOutlined
 } from '@ant-design/icons';
-import { deleteClient, getBrands, getClients } from '../services/brandService';
+import { deleteClient } from '../services/brandService';
 import { urlHelper } from '../utils/UrlHelper';
 import Delete from '../common/Delete';
 import UpsertClient from './UpsertClient';
-
-const { Title } = Typography;
+import { loadClients } from '../store/actions/dashActions';
+import { useDispatch, useSelector } from 'react-redux';
+import { setClientsSuccess } from '../store/reducers/dashSlice';
 
 function Client() {
+    const dispatch = useDispatch()
+    const clientInfo = useSelector(state => state.dashboard.client)
     const [state, setState] = useState({
-        data: [],
-        loading: true,
         deleting: false,
         selected: null,
     })
     useEffect(() => {
-        setState(prev => ({ ...prev, loading: true }))
-        getClients().then(data => {
-            setState(prev => ({ ...prev, data: data.data, loading: false }))
-        }).catch(e => {
-            setState(prev => ({ ...prev, loading: false }))
-        })
+        if(!clientInfo.data.length){
+            dispatch(loadClients())
+        }
     }, [])
 
     const handleRemove = (client) => {
         setState(prev => ({ ...prev, deleting: true, selected: client._id }))
         deleteClient(client._id).then(data => {
             message.success(`Client ${client.name} deleted successfully!`);
+            dispatch(setClientsSuccess(clientInfo.data.filter(item => item._id !== client._id)))
             setState(prev => ({
                 ...prev, deleting: false,
                 selected: null,
-                data: prev.data.filter(item => item._id !== client._id)
             }))
         }).catch(e => {
             message.error(`Error while deleting ${client.name}`);
@@ -42,25 +40,20 @@ function Client() {
     }
 
     const handleCreate = (client) => {
-        setState(prev => ({ ...prev, data: [...prev.data, client] }))
+        dispatch(setClientsSuccess([...clientInfo.data, client]))
     }
 
     const handleUpdate = (client) => {
-        setState(prev => {
-            const newData = [...prev.data]
-            const index = newData.findIndex(item => item._id === client._id)
-            newData[index] = client;
-            return {
-                ...prev,
-                data: newData,
-            }
-        })
+        const newData = [...clientInfo.data]
+        const index = newData.findIndex(item => item._id === client._id)
+        newData[index] = client;
+        dispatch(setClientsSuccess(newData))
     }
 
     return (
         <Card title="Clients" extra={<UpsertClient onCreate={handleCreate} initValues={null}>
-        <PlusOutlined /> Add New
-    </UpsertClient>}>
+            <PlusOutlined /> Add New
+        </UpsertClient>}>
 
             <Table columns={[
                 {
@@ -86,7 +79,7 @@ function Client() {
                         </>
                     },
                 },
-            ]} loading={state.loading} dataSource={state.data} />
+            ]} loading={clientInfo.loading} dataSource={clientInfo.data} />
         </Card>
     );
 }
