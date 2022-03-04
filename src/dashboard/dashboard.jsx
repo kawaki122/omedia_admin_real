@@ -9,9 +9,7 @@ export function Dashboard() {
     return (<div style={{ padding: 24, minHeight: 360 }}>
         <Row justify='space-between'>
             <Col span={8} style={dashboard_card}>
-                
                 <City />
-                
             </Col>
             <Col span={8} style={dashboard_card}>
                 <Brand />

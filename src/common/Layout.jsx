@@ -33,11 +33,12 @@ function SidebarLayout({ children }) {
         </Menu>
       </Sider>
       <Layout>
-        <Header className="site-layout-sub-header-background" style={{ padding: 0 }} />
+        <Header className="site-layout-sub-header-background" style={{ padding: 0 }}>
+        </Header>
         <Content style={{ margin: '24px 16px 0' }}>
           {children}
         </Content>
-        <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
+        <Footer style={{ textAlign: 'center' }}>O Tracker ©2022 Created by Omedia</Footer>
       </Layout>
     </Layout>
   );

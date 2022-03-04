@@ -1,5 +1,6 @@
 
 const initial = {
+    splash: true,
     city: {
         data: [],
         loading: false,
@@ -15,7 +16,17 @@ const initial = {
 }
 
 export default (state = initial, action) => {
-    if (action.type === 'setCitiesLoading') {
+    if (action.type === 'setInitialLoaded') {
+        const stateNew = { ...state };
+        stateNew.splash = false;
+        stateNew.city.data = action.payload.cities;
+        stateNew.brand.data = action.payload.brands;
+        stateNew.client.data = action.payload.clients;
+        stateNew.city.loading = false;
+        stateNew.brand.loading = false;
+        stateNew.client.loading = false;
+        return stateNew;
+    } else if (action.type === 'setCitiesLoading') {
         const cityNew = { ...state.city };
         cityNew.loading = action.payload;
         return {
@@ -72,6 +83,7 @@ export const {
     setBrandsSuccess,
     setClientsLoading,
     setClientsSuccess,
+    setInitialLoaded,
 } = {
     setCitiesLoading: (payload) => ({ type: 'setCitiesLoading', payload }),
     setCitiesSuccess: (payload) => ({ type: 'setCitiesSuccess', payload }),
@@ -79,6 +91,7 @@ export const {
     setBrandsSuccess: (payload) => ({ type: 'setBrandsSuccess', payload }),
     setClientsLoading: (payload) => ({ type: 'setClientsLoading', payload }),
     setClientsSuccess: (payload) => ({ type: 'setClientsSuccess', payload }),
+    setInitialLoaded: (payload) => ({ type: 'setInitialLoaded', payload }),
 }
 
 // const dashSlice = createSlice({

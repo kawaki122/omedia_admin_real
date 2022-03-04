@@ -8,3 +8,8 @@ export function getBase64(img, callback) {
 export const campaignStatusEnum = {
     init: 'init',
 }
+
+export const locationEnum = {
+    PENDING: 'PENDING',
+    ACTIVE: 'ACTIVE',
+}

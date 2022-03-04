@@ -19,11 +19,11 @@ function Brand() {
         deleting: false,
         selected: null,
     })
-    useEffect(() => {
-        if(!brandInfo.data.length){
-            dispatch(loadBrands())
-        }
-    }, [])
+    // useEffect(() => {
+    //     if(!brandInfo.data.length){
+    //         dispatch(loadBrands())
+    //     }
+    // }, [])
 
     const handleRemove = (brand) => {
         setState(prev => ({ ...prev, deleting: true, selected: brand._id }))

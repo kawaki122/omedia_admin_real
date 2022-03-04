@@ -5,8 +5,16 @@ export const getCampaignes = () => {
     return axios.get(urlHelper.campaignUrl)
 }
 
+export const getCampaignComplete = (id) => {
+    return axios.get(urlHelper.campaignUrl+'/complete?id='+id)
+}
+
 export const upsertCampaign = (body) => {
     return axios.patch(urlHelper.campaignUrl, body)
+}
+
+export const upsertLocation = (body) => {
+    return axios.patch(urlHelper.locationUrl, body)
 }
 
 export const deleteCampaign = (id) => {

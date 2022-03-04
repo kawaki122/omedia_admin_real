@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Table, Row, Col, message, Avatar } from 'antd';
 import {
-    PlusOutlined
+    PlusOutlined,
+    LinkOutlined
 } from '@ant-design/icons';
 import Delete from '../common/Delete';
 import { deleteCampaign, getCampaignes } from '../services/campaignService';
 import UpsertCampaign from './UpsertCampaign';
 import moment from 'moment';
 import { urlHelper } from '../utils/UrlHelper';
+import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 const { Title } = Typography;
 
 function Campaign() {
+    const history = useHistory()
     const [state, setState] = useState({
         data: [],
         loading: true,
@@ -56,6 +60,10 @@ function Campaign() {
                 data: newData,
             }
         })
+    }
+
+    const handleDetails = (id) => {
+        history.push({pathname: '/campaign_detail', state: {campaign: id}})
     }
 
     return (
@@ -114,6 +122,8 @@ function Campaign() {
                             <UpsertCampaign initValues={record} onCreate={handleUpdate}>
                                 Edit
                             </UpsertCampaign>
+                            &nbsp;|&nbsp;
+                                <a onClick={() => handleDetails(record._id)}>Details</a>
                         </>
                     },
                 },

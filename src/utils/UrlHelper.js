@@ -24,8 +24,17 @@ class UrlHelper {
     get clientUrl(){
         return this._baseUrl+'client'
     }
+
     get campaignUrl(){
         return this._baseUrl+'campaign'
+    }
+
+    get locationUrl(){
+        return this._baseUrl+'campaign/location'
+    }
+
+    get commonUrl(){
+        return this._baseUrl+'common'
     }
 }
 

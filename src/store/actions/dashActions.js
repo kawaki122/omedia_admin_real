@@ -1,5 +1,6 @@
 import { getBrands, getClients } from "../../services/brandService";
 import { getCities } from "../../services/cityService";
+import { getInitial } from "../../services/httpCommon";
 import { 
     setBrandsLoading,
     setBrandsSuccess,
@@ -7,7 +8,16 @@ import {
     setCitiesSuccess,
     setClientsLoading,
     setClientsSuccess,
+    setInitialLoaded,
 } from "../reducers/dashSlice";
+
+export const loadInitial = () => dispatch => {
+    getInitial().then(data => {
+        dispatch(setInitialLoaded(data.data))
+    }).catch(e => {
+        console.log(e)
+    })
+}
 
 export const loadCities = () => dispatch => {
     dispatch(setCitiesLoading(true))

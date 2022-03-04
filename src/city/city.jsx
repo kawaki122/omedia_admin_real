@@ -19,11 +19,11 @@ function City() {
         selected: null,
     })
 
-    useEffect(() => {
-        if(!cityInfo.data.length) {
-            dispatch(loadCities())
-        }
-    }, [])
+    // useEffect(() => {
+    //     if(!cityInfo.data.length) {
+    //         dispatch(loadCities())
+    //     }
+    // }, [])
 
     const handleRemove = (city) => {
         setState(prev => ({ ...prev, deleting: true, selected: city._id }))

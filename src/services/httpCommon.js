@@ -6,3 +6,7 @@ export const uploadFile = (file) => {
     form.append('file', file);
     return axios.post(urlHelper.uploadUrl, form)
 }
+
+export const getInitial = () => {
+    return axios.get(urlHelper.commonUrl+'/getInitial')
+}

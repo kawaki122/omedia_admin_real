@@ -18,11 +18,12 @@ function Client() {
         deleting: false,
         selected: null,
     })
-    useEffect(() => {
-        if(!clientInfo.data.length){
-            dispatch(loadClients())
-        }
-    }, [])
+    
+    // useEffect(() => {
+    //     if(!clientInfo.data.length){
+    //         dispatch(loadClients())
+    //     }
+    // }, [])
 
     const handleRemove = (client) => {
         setState(prev => ({ ...prev, deleting: true, selected: client._id }))
