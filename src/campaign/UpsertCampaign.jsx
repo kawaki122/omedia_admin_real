@@ -9,6 +9,7 @@ const { RangePicker } = DatePicker;
 function UpsertCampaign({ onCreate, initValues, children }) {
     const [form] = Form.useForm()
     const brandInfo = useSelector(item => item.dashboard.brand)
+    const cityInfo = useSelector(item => item.dashboard.city)
     const [state, setState] = useState({
         visible: false,
         confirming: false,
@@ -23,7 +24,8 @@ function UpsertCampaign({ onCreate, initValues, children }) {
                 duration: [
                     moment(initValues.from),
                     moment(initValues.to)
-                ]
+                ],
+                cities: initValues.cities,
             });
         }
         setState(prev => ({
@@ -36,7 +38,8 @@ function UpsertCampaign({ onCreate, initValues, children }) {
     const handleOk = (values) => {
         setState(prev => ({ ...prev, confirming: true }));
         const [from, to] = values.duration;
-
+console.log(values.cities)
+return
         upsertCampaign({
             title: values.title,
             campaignId: state.campaignId,
@@ -44,6 +47,7 @@ function UpsertCampaign({ onCreate, initValues, children }) {
             to: moment(to),
             status: campaignStatusEnum.init,
             brand: values.brand,
+            
         }).then(data => {
             message.success(`Campaign ${values.title} ${state.campaignId ? 'updated' : 'added'} successfully`);
             onCreate(data.data)
@@ -60,7 +64,6 @@ function UpsertCampaign({ onCreate, initValues, children }) {
         form.resetFields()
         setState(prev => ({ ...prev, visible: false }));
     };
-
 
     return (
         <>
@@ -106,6 +109,24 @@ function UpsertCampaign({ onCreate, initValues, children }) {
                         <Select>
                             <Select.Option value="">Select a Brand</Select.Option>
                             {brandInfo.data.map(item => <Select.Option value={item._id}>
+                                {item.title}
+                            </Select.Option>)}
+                        </Select>
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Cities"
+                        name="cities"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please select cities!',
+                            },
+                        ]}
+                    >
+                        <Select mode="multiple" allowClear>
+                            <Select.Option value="">Select Cities</Select.Option>
+                            {cityInfo.data.map(item => <Select.Option value={item._id}>
                                 {item.title}
                             </Select.Option>)}
                         </Select>

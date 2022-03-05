@@ -1,18 +1,24 @@
-import { Button, Card, Carousel } from 'antd';
-import Meta from 'antd/lib/card/Meta';
-import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import LocationHeader from './LocationHeader';
-import useCampDetail from './useCampDetail';
+import { Button, Card, Carousel } from "antd";
+import Meta from "antd/lib/card/Meta";
+import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import CampaignHeader from "./CampaignHeader";
+import LocationHeader from "./LocationHeader";
+import useCampDetail from "./useCampDetail";
 
 function CampaignDetail() {
-    const history = useHistory()
-    const state = useCampDetail(history.location.state);
+  const history = useHistory();
+  const state = useCampDetail(history.location.state);
 
-    return (
-        <div style={{ height: '100%', position: 'relative' }}>
+  return (
+    <div style={{ height: "100%", position: "relative" }}>
+      <CampaignHeader
+        activeTab={state.activeTab}
+        setActiveTab={state.setActiveTab}
+        campaign={state.campaign}
+      />
 
-            <div style={{ position: 'absolute', bottom: '10px', height: '350px', width: '100%', }}>
+      {/* <div style={{ position: 'absolute', bottom: '10px', height: '350px', width: '100%', }}>
                 <LocationHeader
                     locationType={state.locationType}
                     inputChange={state.handleSearch}
@@ -27,9 +33,9 @@ function CampaignDetail() {
                     </div>
                     )}
                 </Carousel>
-            </div>
-        </div>
-    )
+            </div> */}
+    </div>
+  );
 }
 
-export default CampaignDetail
+export default CampaignDetail;

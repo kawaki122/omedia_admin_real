@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { getCampaignComplete } from '../services/campaignService';
 import { locationEnum } from '../utils/constants';
@@ -8,13 +9,18 @@ import useLocationFilter from './useLocationFilter';
 const useCampDetail = (camp) => {
     // const [state, dispatch] = useReducer(campReducer, initialCampState)
     const [data, setData] = useState({
-        campaign: null,
+        campaign: {
+            title: '',
+            brandTitle: '',
+            img: '',
+        },
         locations: [],
     })
     const [config, setConfig] = useState({
         locationType: locationEnum.PENDING,
         search: '',
         loading: true,
+        activeTab: "1",
     })
 
     const locations = useLocationFilter(config.search, data.locations, config.locationType);
@@ -23,7 +29,17 @@ const useCampDetail = (camp) => {
         getCampaignComplete(camp.campaign).then((result) => {
             console.log(result)
             const { campaign, locations } = result.data;
-            setData(prev => ({ ...prev, campaign, locations }))
+            
+            setData(prev => ({ ...prev, campaign: {
+                title: campaign.title,
+                status: campaign.status,
+                brandTitle: campaign.brand.title,
+                img: campaign.brand.img,
+                client: campaign.brand.client?.name,
+                from: moment(campaign.from).format('MMMM Do YYYY'),
+                to: moment(campaign.to).format('MMMM Do YYYY'),
+                duration: moment.duration(moment(campaign.to).diff(moment(campaign.from))).asDays()
+            }, locations }))
             setConfig(prev => ({ ...prev, loading: false }))
         }).catch((error) => {
             setConfig(prev => ({ ...prev, loading: false }))
@@ -44,7 +60,11 @@ const useCampDetail = (camp) => {
         setConfig(prev => ({...prev, search: value}))
     }
 
-    return { campaign: data.campaign, locations, ...config, handleSearch, locationTypeChange, onLocationCreated }
+    const setActiveTab = (tab) => {
+        setConfig(prev => ({...prev, activeTab: tab}))
+    }
+
+    return { campaign: data.campaign, locations, ...config, handleSearch, locationTypeChange, onLocationCreated, setActiveTab }
 }
 
 export default useCampDetail;
