@@ -38,8 +38,7 @@ function UpsertCampaign({ onCreate, initValues, children }) {
     const handleOk = (values) => {
         setState(prev => ({ ...prev, confirming: true }));
         const [from, to] = values.duration;
-console.log(values.cities)
-return
+
         upsertCampaign({
             title: values.title,
             campaignId: state.campaignId,
@@ -47,7 +46,7 @@ return
             to: moment(to),
             status: campaignStatusEnum.init,
             brand: values.brand,
-            
+            cities: values.cities,
         }).then(data => {
             message.success(`Campaign ${values.title} ${state.campaignId ? 'updated' : 'added'} successfully`);
             onCreate(data.data)
@@ -117,6 +116,7 @@ return
                     <Form.Item
                         label="Cities"
                         name="cities"
+                        initialValue={[]}
                         rules={[
                             {
                                 required: true,
@@ -124,8 +124,8 @@ return
                             },
                         ]}
                     >
-                        <Select mode="multiple" allowClear>
-                            <Select.Option value="">Select Cities</Select.Option>
+                        <Select mode="multiple" allowClear placeholder="Select Cities">
+
                             {cityInfo.data.map(item => <Select.Option value={item._id}>
                                 {item.title}
                             </Select.Option>)}

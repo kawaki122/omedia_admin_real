@@ -29,8 +29,7 @@ function CampaignHeader({ activeTab, setActiveTab, campaign }) {
         }}
         tags={<Tag color="blue">{campaign.status}</Tag>}
         extra={[
-          <Button key="3">Edit</Button>,
-          <Button key="2" type="primary">
+          <Button key="2">
             Complete
           </Button>,
           <Button key="1" type="danger">
@@ -49,7 +48,7 @@ function CampaignHeader({ activeTab, setActiveTab, campaign }) {
           <Descriptions.Item label="Client">{campaign.client}</Descriptions.Item>
           <Descriptions.Item label="Brand">{campaign.brandTitle}</Descriptions.Item>
           <Descriptions.Item label="Cities">
-            Lahore, Islamabad, Sialkot, Gujranwala
+            {campaign.cities}
           </Descriptions.Item>
           <Descriptions.Item label="Start Time">
             {campaign.from}
@@ -62,6 +61,7 @@ function CampaignHeader({ activeTab, setActiveTab, campaign }) {
           </Descriptions.Item>
         </Descriptions>
       </PageHeader>
+      
     </div>
   );
 }

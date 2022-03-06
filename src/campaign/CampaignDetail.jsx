@@ -1,9 +1,9 @@
-import { Button, Card, Carousel } from "antd";
-import Meta from "antd/lib/card/Meta";
-import React, { useEffect } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
 import CampaignHeader from "./CampaignHeader";
-import LocationHeader from "./LocationHeader";
+import Competition from "./Competition";
+import LocationDetail from "./LocationDetail";
+import Locations from "./Locations";
 import useCampDetail from "./useCampDetail";
 
 function CampaignDetail() {
@@ -18,22 +18,23 @@ function CampaignDetail() {
         campaign={state.campaign}
       />
 
-      {/* <div style={{ position: 'absolute', bottom: '10px', height: '350px', width: '100%', }}>
-                <LocationHeader
-                    locationType={state.locationType}
-                    inputChange={state.handleSearch}
-                    onTypeChange={state.locationTypeChange}
-                    onCreate={state.onLocationCreated}
-                />
-                <Carousel slidesToShow={5}>
-                    {state.locations.map((location, key) => <div key={key}>
-                        {location && <Card hoverable style={{ margin: '15px 15px' }} cover={<img style={{ width: '100%', height: '200px' }} src='/logo192.png' />}>
-                            <Meta title={location.title} description={location.address} />
-                        </Card>}
-                    </div>
-                    )}
-                </Carousel>
-            </div> */}
+      {state.activeTab === "1" && (
+        <Locations
+          locationType={state.locationType}
+          inputChange={state.handleSearch}
+          onTypeChange={state.locationTypeChange}
+          onCreate={state.onLocationCreated}
+          locations={state.locations}
+          viewLocation={state.viewLocation}
+        />
+      )}
+      {state.activeTab === "2" && <Competition />}
+      {state.activeTab === "3" && <Competition />}
+      <LocationDetail
+        location={state.locations[state.locationIndex]}
+        visible={state.locationIndex > -1}
+        viewLocation={state.viewLocation}
+      />
     </div>
   );
 }

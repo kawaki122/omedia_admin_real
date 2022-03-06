@@ -53,7 +53,7 @@ function UpsertLocation({ onCreate, initValues, children }) {
 
     return (
         <>
-            <Button onClick={showModal} size='large' shape='round' icon={<PlusOutlined />}>{children}</Button>
+            <Button onClick={showModal} size='large' icon={<PlusOutlined />}>{children}</Button>
             <Modal
                 title="Add Location"
                 visible={state.visible}
