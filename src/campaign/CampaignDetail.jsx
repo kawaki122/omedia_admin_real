@@ -32,8 +32,10 @@ function CampaignDetail() {
       {state.activeTab === "3" && <Competition />}
       <LocationDetail
         location={state.locations[state.locationIndex]}
+        reviews={state.locationReviews}
         visible={state.locationIndex > -1}
         viewLocation={state.viewLocation}
+        submitReview={state.submitReview}
       />
     </div>
   );

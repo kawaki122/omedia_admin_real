@@ -59,11 +59,7 @@ function Locations({
                   />
                 }
                 onClick={()=>viewLocation(key)}
-                actions={[
-                  <DeleteOutlined key="delete" />,
-                  <EditOutlined key="edit" />,
-                  <EllipsisOutlined key="ellipsis" />,
-                ]}
+
               >
                 <Meta title={location.title} description={location.address} />
               </Card>

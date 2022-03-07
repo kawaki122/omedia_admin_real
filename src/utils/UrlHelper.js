@@ -33,6 +33,10 @@ class UrlHelper {
         return this._baseUrl+'campaign/location'
     }
 
+    get reviewUrl(){
+        return this._baseUrl+'campaign/review'
+    }
+
     get commonUrl(){
         return this._baseUrl+'common'
     }

@@ -17,6 +17,10 @@ export const upsertLocation = (body) => {
     return axios.patch(urlHelper.locationUrl, body)
 }
 
+export const addReview = (body) => {
+    return axios.patch(urlHelper.reviewUrl, body)
+}
+
 export const deleteCampaign = (id) => {
     return axios.delete(urlHelper.campaignUrl+'?id='+id)
 }

@@ -1,8 +1,10 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { getCampaignComplete } from "../services/campaignService";
+import { addReview, getCampaignComplete } from "../services/campaignService";
 import { locationEnum } from "../utils/constants";
+import { urlHelper } from "../utils/UrlHelper";
 import useLocationFilter from "./useLocationFilter";
+import useReviewFilter from "./useReviewFilter";
 // import { SET_CAMP_LOADING, SET_INITIAL_CAMP_DATA } from '../store/actions/campActions';
 // import campReducer, { initialCampState } from '../store/reducers/campReducer';
 
@@ -10,6 +12,7 @@ const useCampDetail = (camp) => {
   // const [state, dispatch] = useReducer(campReducer, initialCampState)
   const [data, setData] = useState({
     campaign: {
+      _id: "",
       title: "",
       brandTitle: "",
       img: "",
@@ -19,6 +22,7 @@ const useCampDetail = (camp) => {
       duration: 0,
     },
     locations: [],
+    reviews: [],
   });
   const [config, setConfig] = useState({
     locationType: locationEnum.PENDING,
@@ -34,14 +38,20 @@ const useCampDetail = (camp) => {
     config.locationType
   );
 
+  const locationReviews = useReviewFilter(
+    data.locations[config.locationIndex],
+    data.reviews
+  );
+
   useEffect(() => {
     getCampaignComplete(camp.campaign)
       .then((result) => {
-        const { campaign, locations } = result.data;
+        const { campaign, locations, reviews } = result.data;
 
         setData((prev) => ({
           ...prev,
           campaign: {
+            _id: campaign._id,
             title: campaign.title,
             status: campaign.status,
             brandTitle: campaign.brand.title,
@@ -52,9 +62,20 @@ const useCampDetail = (camp) => {
             duration: moment
               .duration(moment(campaign.to).diff(moment(campaign.from)))
               .asDays(),
-            cities: campaign.cities.map(city => city.title).join(", "),
+            cities: campaign.cities.map((city) => city.title).join(", "),
           },
-          locations,
+          locations: locations.map((location) =>
+            Object.keys(location).reduce((result, name) => {
+              const value = location[name];
+              result[name] = value ? value : "Not Added";
+              return result;
+            }, {})
+          ),
+          reviews: reviews.map((item) => ({
+            ...item,
+            avatar: urlHelper.fileUrl(item.avatar),
+            datetime: moment(result.data.createdAt).fromNow()
+          })),
         }));
         setConfig((prev) => ({ ...prev, loading: false }));
       })
@@ -64,10 +85,35 @@ const useCampDetail = (camp) => {
       });
   }, [camp]);
 
+  const submitReview = (review) => {
+    const loc = data.locations[config.locationIndex];
+    return addReview({
+      author: "Omedia",
+      avatar: "omedia.png",
+      content: review,
+      campaign: data.campaign._id,
+      location: loc?._id,
+    })
+      .then((result) => {
+        setData((prev) => ({
+          ...prev,
+          reviews: [
+            ...prev.reviews,
+            { ...result.data, avatar: urlHelper.fileUrl(result.data.avatar), datetime: moment(result.data.createdAt).fromNow() },
+          ],
+        }));
+        return;
+      })
+      .catch((e) => {
+        console.log(e);
+        return;
+      });
+  };
+
   const locationTypeChange = (type) => {
     setConfig((prev) => ({ ...prev, locationType: type }));
   };
-
+  console.log(data.reviews);
   const onLocationCreated = (location) => {
     setData((prev) => ({ ...prev, locations: [...prev.locations, location] }));
   };
@@ -81,8 +127,8 @@ const useCampDetail = (camp) => {
   };
 
   const viewLocation = (location) => {
-    setConfig(prev => ({ ...prev, locationIndex: location }))
-  }
+    setConfig((prev) => ({ ...prev, locationIndex: location }));
+  };
 
   return {
     campaign: data.campaign,
@@ -93,6 +139,8 @@ const useCampDetail = (camp) => {
     onLocationCreated,
     setActiveTab,
     viewLocation,
+    submitReview,
+    locationReviews,
   };
 };
 
