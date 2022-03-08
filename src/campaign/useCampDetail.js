@@ -74,7 +74,7 @@ const useCampDetail = (camp) => {
           reviews: reviews.map((item) => ({
             ...item,
             avatar: urlHelper.fileUrl(item.avatar),
-            datetime: moment(result.data.createdAt).fromNow()
+            datetime: moment(item.createdAt).fromNow(),
           })),
         }));
         setConfig((prev) => ({ ...prev, loading: false }));
@@ -95,11 +95,16 @@ const useCampDetail = (camp) => {
       location: loc?._id,
     })
       .then((result) => {
+        const { avatar, createdAt } = result.data;
         setData((prev) => ({
           ...prev,
           reviews: [
             ...prev.reviews,
-            { ...result.data, avatar: urlHelper.fileUrl(result.data.avatar), datetime: moment(result.data.createdAt).fromNow() },
+            {
+              ...result.data,
+              avatar: urlHelper.fileUrl(avatar),
+              datetime: moment(createdAt).fromNow(),
+            },
           ],
         }));
         return;
