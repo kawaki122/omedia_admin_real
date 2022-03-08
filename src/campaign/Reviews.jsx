@@ -25,7 +25,7 @@ const CommentList = ({ comments }) => (
 const Editor = ({ onChange, onSubmit, submitting, value, validation }) => (
   <>
     <Form.Item>
-      <TextArea rows={4} onChange={onChange} value={value} />
+      <TextArea rows={2} onChange={onChange} value={value} />
     </Form.Item>
     <small style={{color: 'red', fontStyle: 'italic'}}>{validation}</small>
     <Form.Item>
@@ -63,7 +63,9 @@ function Reviews({ reviews, submitReview }) {
   };
   return (
     <>
-      <CommentList comments={reviews} />
+    <div style={{maxHeight: '300px', overflow: 'auto'}}>
+    <CommentList comments={reviews} />
+      </div>
       <Comment
         avatar={
           <Avatar src={urlHelper.fileUrl('omedia.png')} alt="Han Solo" />

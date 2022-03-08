@@ -26,6 +26,7 @@ function LocationDetail({ location, visible, viewLocation, reviews, submitReview
       visible={visible}
       onCancel={() => viewLocation(-1)}
       width={800}
+      style={{top: 20}}
       footer={[
         <Button
           key="back"
