@@ -1,20 +1,27 @@
 import { Select, Card, Carousel, Input } from "antd";
 import Meta from "antd/lib/card/Meta";
 import React from "react";
-import { EditOutlined, EllipsisOutlined, SettingOutlined, DeleteOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  EllipsisOutlined,
+  SettingOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { locationEnum } from "../utils/constants";
 import UpsertLocation from "./UpsertLocation";
 
 const { Option } = Select;
-const {Search} = Input;
+const { Search } = Input;
 
 function Locations({
-  onTypeChange,
-  locationType,
-  onCreate,
-  inputChange,
-  locations,
-  viewLocation,
+  state: {
+    locationTypeChange,
+    locationType,
+    onLocationCreated,
+    handleSearch,
+    locations,
+    viewLocation,
+  },
 }) {
   return (
     <div>
@@ -24,22 +31,27 @@ function Locations({
           justifyContent: "space-between",
           alignItems: "center",
           padding: "0px 15px",
-          marginTop: '50px',
+          marginTop: "50px",
         }}
       >
-        <Select value={locationType} size="large" onChange={onTypeChange}>
+        <Select value={locationType} size="large" onChange={locationTypeChange}>
           <Option value={locationEnum.ACTIVE}>Active Locations</Option>
           <Option value={locationEnum.PENDING}>Pending Locations</Option>
         </Select>
         <div style={{ display: "flex" }}>
-          <Search placeholder="search locations" size="large" onSearch={inputChange} style={{ width: 200, marginRight: '20px' }} />
+          <Search
+            placeholder="search locations"
+            size="large"
+            onSearch={handleSearch}
+            style={{ width: 200, marginRight: "20px" }}
+          />
           <UpsertLocation
             initValues={{
               title: "",
               address: "",
               _id: null,
             }}
-            onCreate={onCreate}
+            onCreate={onLocationCreated}
           >
             Add New
           </UpsertLocation>
@@ -58,8 +70,7 @@ function Locations({
                     src="/logo192.png"
                   />
                 }
-                onClick={()=>viewLocation(key)}
-
+                onClick={() => viewLocation(key)}
               >
                 <Meta title={location.title} description={location.address} />
               </Card>

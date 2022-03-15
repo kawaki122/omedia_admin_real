@@ -8,6 +8,7 @@ import {
   Button,
   Image,
   Empty,
+  Popconfirm
 } from "antd";
 import moment from "moment";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -17,29 +18,50 @@ const { TabPane } = Tabs;
 const { Item } = Descriptions;
 const { PreviewGroup } = Image;
 
-function LocationDetail({ location, visible, viewLocation, reviews, submitReview }) {
+function LocationDetail({ location, visible, state }) {
   if (!visible) {
     return null;
   }
   return (
     <Modal
       visible={visible}
-      onCancel={() => viewLocation(-1)}
+      onCancel={() => state.viewLocation(-1)}
       width={800}
       style={{top: 20}}
-      footer={[
+      footer={state.edit?[
+        <Popconfirm
+        title={`${state.deletables.length?'Empty reviews will be deleted. ':''}Are you sure to save the changes?`}
+        onConfirm={()=>state.updateLocation(location._id)}
+        okText="Yes"
+        cancelText="No">
         <Button
-          key="back"
+          key="save"
           icon={<EditOutlined />}
-          onClick={() => viewLocation(-1)}
+        >
+          Save
+        </Button>
+        </Popconfirm>,
+        <Button
+          key="discard"
+          type="danger"
+          icon={<DeleteOutlined />}
+          onClick={() => state.viewLocation(-1)}
+        >
+          Discard
+        </Button>,
+      ]:[
+        <Button
+          key="edit"
+          icon={<EditOutlined />}
+          onClick={() => state.toggleEdit(true)}
         >
           Edit
         </Button>,
         <Button
-          key="submit"
+          key="delete"
           type="danger"
           icon={<DeleteOutlined />}
-          onClick={() => viewLocation(-1)}
+          onClick={() => state.viewLocation(-1)}
         >
           Delete
         </Button>,
@@ -93,7 +115,7 @@ function LocationDetail({ location, visible, viewLocation, reviews, submitReview
           )}
         </TabPane>
         <TabPane tab="Reviews" key="3">
-          <Reviews reviews={reviews} submitReview={submitReview} />
+          <Reviews reviews={state.locationReviews} submitReview={state.submitReview} />
         </TabPane>
       </Tabs>
     </Modal>

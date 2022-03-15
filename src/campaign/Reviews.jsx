@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Button,
   Comment,
@@ -47,6 +47,7 @@ function Reviews({ reviews, submitReview }) {
     reviewInput: "",
     validation: ""
   });
+  
   const handleChange = (e) => {
     setState(prev => ({...prev, reviewInput: e.target.value, validation: ''}))
   };

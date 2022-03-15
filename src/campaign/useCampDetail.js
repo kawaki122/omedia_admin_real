@@ -5,31 +5,35 @@ import { locationEnum } from "../utils/constants";
 import { urlHelper } from "../utils/UrlHelper";
 import useLocationFilter from "./useLocationFilter";
 import useReviewFilter from "./useReviewFilter";
-// import { SET_CAMP_LOADING, SET_INITIAL_CAMP_DATA } from '../store/actions/campActions';
-// import campReducer, { initialCampState } from '../store/reducers/campReducer';
+
+const initialData = {
+  campaign: {
+    _id: "",
+    title: "",
+    status: '',
+    brandTitle: "",
+    img: "",
+    client: "",
+    from: null,
+    to: null,
+    duration: 0,
+    cities: [],
+  },
+  locations: [],
+  reviews: [],
+};
 
 const useCampDetail = (camp) => {
-  // const [state, dispatch] = useReducer(campReducer, initialCampState)
-  const [data, setData] = useState({
-    campaign: {
-      _id: "",
-      title: "",
-      brandTitle: "",
-      img: "",
-      client: "",
-      from: null,
-      to: null,
-      duration: 0,
-    },
-    locations: [],
-    reviews: [],
-  });
+  const [backup, setBackup] = useState(initialData)
+  const [data, setData] = useState(initialData);
   const [config, setConfig] = useState({
     locationType: locationEnum.PENDING,
     search: "",
     loading: true,
     activeTab: "1",
     locationIndex: -1,
+    edit: false,
+    deletables: [],
   });
 
   const locations = useLocationFilter(
@@ -38,18 +42,11 @@ const useCampDetail = (camp) => {
     config.locationType
   );
 
-  const locationReviews = useReviewFilter(
-    data.locations[config.locationIndex],
-    data.reviews
-  );
-
   useEffect(() => {
     getCampaignComplete(camp.campaign)
       .then((result) => {
         const { campaign, locations, reviews } = result.data;
-
-        setData((prev) => ({
-          ...prev,
+        const obj = {
           campaign: {
             _id: campaign._id,
             title: campaign.title,
@@ -71,12 +68,11 @@ const useCampDetail = (camp) => {
               return result;
             }, {})
           ),
-          reviews: reviews.map((item) => ({
-            ...item,
-            avatar: urlHelper.fileUrl(item.avatar),
-            datetime: moment(item.createdAt).fromNow(),
-          })),
-        }));
+          reviews,
+        };
+
+        setData(obj);
+        setBackup(obj);
         setConfig((prev) => ({ ...prev, loading: false }));
       })
       .catch((error) => {
@@ -84,6 +80,34 @@ const useCampDetail = (camp) => {
         console.log(error);
       });
   }, [camp]);
+
+  const changeReviews = (info) =>{
+    setConfig(prev => {
+      let newDeletables = [...prev.deletables];
+      if(info.value) {
+        newDeletables = newDeletables.filter(item => item !== info._id)
+      } else {
+        newDeletables.push(info._id)
+      }
+      return{...prev, deletables: newDeletables}
+    })
+    setData(prev => {
+      const index = prev.reviews.findIndex(item => item._id === info._id);
+      const newRevs = [...prev.reviews];
+      newRevs[index].content = info.value;
+      return { ...prev, reviews: newRevs }
+    })
+  }
+
+  const locationReviews = useReviewFilter(
+    data.locations[config.locationIndex],
+    data.reviews,
+    {config, changeReviews},
+  );
+
+  const toggleEdit = (edit) => {
+    setConfig(prev => ({...prev, edit }))
+  }
 
   const submitReview = (review) => {
     const loc = data.locations[config.locationIndex];
@@ -115,10 +139,14 @@ const useCampDetail = (camp) => {
       });
   };
 
+  const updateLocation = (locationId) => {
+
+  }
+
   const locationTypeChange = (type) => {
     setConfig((prev) => ({ ...prev, locationType: type }));
   };
-  console.log(data.reviews);
+  
   const onLocationCreated = (location) => {
     setData((prev) => ({ ...prev, locations: [...prev.locations, location] }));
   };
@@ -145,6 +173,8 @@ const useCampDetail = (camp) => {
     setActiveTab,
     viewLocation,
     submitReview,
+    toggleEdit,
+    updateLocation,
     locationReviews,
   };
 };

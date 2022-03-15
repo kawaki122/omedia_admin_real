@@ -18,24 +18,13 @@ function CampaignDetail() {
         campaign={state.campaign}
       />
 
-      {state.activeTab === "1" && (
-        <Locations
-          locationType={state.locationType}
-          inputChange={state.handleSearch}
-          onTypeChange={state.locationTypeChange}
-          onCreate={state.onLocationCreated}
-          locations={state.locations}
-          viewLocation={state.viewLocation}
-        />
-      )}
+      {state.activeTab === "1" && <Locations state={state} />}
       {state.activeTab === "2" && <Competition />}
       {state.activeTab === "3" && <Competition />}
       <LocationDetail
         location={state.locations[state.locationIndex]}
-        reviews={state.locationReviews}
         visible={state.locationIndex > -1}
-        viewLocation={state.viewLocation}
-        submitReview={state.submitReview}
+        state={state}
       />
     </div>
   );
