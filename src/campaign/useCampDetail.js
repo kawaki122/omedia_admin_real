@@ -72,7 +72,7 @@ const useCampDetail = (camp) => {
         };
 
         setData(obj);
-        setBackup(obj);
+        setBackup(JSON.parse(JSON.stringify(obj)));
         setConfig((prev) => ({ ...prev, loading: false }));
       })
       .catch((error) => {
@@ -81,7 +81,9 @@ const useCampDetail = (camp) => {
       });
   }, [camp]);
 
-  const changeReviews = (info) =>{
+  const changeReviews = (info) => {
+    if(info.value==='undo') info.value = backup.reviews.find(item=>item._id===info._id)?.content
+
     setConfig(prev => {
       let newDeletables = [...prev.deletables];
       if(info.value) {
@@ -102,6 +104,7 @@ const useCampDetail = (camp) => {
   const locationReviews = useReviewFilter(
     data.locations[config.locationIndex],
     data.reviews,
+    backup.reviews,
     {config, changeReviews},
   );
 

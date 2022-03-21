@@ -2,8 +2,9 @@ import { Input } from "antd";
 import moment from "moment";
 import { useMemo } from "react";
 import { urlHelper } from "../utils/UrlHelper";
+import { CloseCircleFilled, UndoOutlined } from "@ant-design/icons";
 
-const useReviewFilter = (location, reviews, extra) => {
+const useReviewFilter = (location, reviews, revb, extra) => {
   return useMemo(() => {
     if (location) {
       return reviews
@@ -24,9 +25,28 @@ const useReviewFilter = (location, reviews, extra) => {
                 <Input
                   value={item.content}
                   onChange={(event) =>
-                    extra.changeReviews({ value: event.target.value, _id: item._id })
+                    extra.changeReviews({
+                      value: event.target.value,
+                      _id: item._id,
+                    })
                   }
-                  allowClear
+                  suffix={
+                    item.content ? (
+                      <CloseCircleFilled
+                        onClick={() =>
+                          extra.changeReviews({ value: "", _id: item._id })
+                        }
+                        color="rgba(0, 0, 0, 0.25)"
+                      />
+                    ) : (
+                      <UndoOutlined
+                        onClick={() =>
+                          extra.changeReviews({ value: "undo", _id: item._id })
+                        }
+                        color="rgba(0, 0, 0, 0.25)"
+                      />
+                    )
+                  }
                 />
               ) : (
                 item.content
@@ -38,7 +58,7 @@ const useReviewFilter = (location, reviews, extra) => {
         }));
     }
     return [];
-  }, [location, reviews, extra.config.edit, extra.changeReviews]);
+  }, [location, reviews, extra.config.edit, revb, extra.changeReviews]);
 };
 
 export default useReviewFilter;
