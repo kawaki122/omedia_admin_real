@@ -146,6 +146,25 @@ const useCampDetail = (camp) => {
 
   }
 
+  const onPhotoChange = ({ fileList }) => {
+    console.log(fileList);
+    setData(async prev => {
+      debugger
+      const locationsNew = [...prev.locations];
+      locationsNew[config.locationIndex].photos = await fileList.map(async file => {
+        if(typeof file === 'string') {
+          return urlHelper.fileUrl(file);
+        }
+        return await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file.originFileObj);
+          reader.onload = () => resolve(reader.result);
+        });
+      })
+      return {...prev, locations: locationsNew}
+    })
+  };
+
   const locationTypeChange = (type) => {
     setConfig((prev) => ({ ...prev, locationType: type }));
   };
@@ -178,6 +197,7 @@ const useCampDetail = (camp) => {
     submitReview,
     toggleEdit,
     updateLocation,
+    onPhotoChange,
     locationReviews,
   };
 };

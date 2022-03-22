@@ -8,11 +8,14 @@ import {
   Button,
   Image,
   Empty,
-  Popconfirm
+  Popconfirm,
+  Upload,
 } from "antd";
+import ImgCrop from "antd-img-crop";
 import moment from "moment";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Reviews from "./Reviews";
+import { urlHelper } from "../utils/UrlHelper";
 const { Text } = Typography;
 const { TabPane } = Tabs;
 const { Item } = Descriptions;
@@ -22,50 +25,71 @@ function LocationDetail({ location, visible, state }) {
   if (!visible) {
     return null;
   }
+  const onPreview = async (file) => {
+    let src = file.url;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result);
+      });
+    }
+    const image = new Image();
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow.document.write(image.outerHTML);
+  };
+
   return (
     <Modal
       visible={visible}
       onCancel={() => state.viewLocation(-1)}
       width={800}
-      style={{top: 20}}
-      footer={state.edit?[
-        <Popconfirm
-        title={`${state.deletables.length?'Empty reviews will be deleted. ':''}Are you sure to save the changes?`}
-        onConfirm={()=>state.updateLocation(location._id)}
-        okText="Yes"
-        cancelText="No">
-        <Button
-          key="save"
-          icon={<EditOutlined />}
-        >
-          Save
-        </Button>
-        </Popconfirm>,
-        <Button
-          key="discard"
-          type="danger"
-          icon={<DeleteOutlined />}
-          onClick={() => state.viewLocation(-1)}
-        >
-          Discard
-        </Button>,
-      ]:[
-        <Button
-          key="edit"
-          icon={<EditOutlined />}
-          onClick={() => state.toggleEdit(true)}
-        >
-          Edit
-        </Button>,
-        <Button
-          key="delete"
-          type="danger"
-          icon={<DeleteOutlined />}
-          onClick={() => state.viewLocation(-1)}
-        >
-          Delete
-        </Button>,
-      ]}
+      style={{ top: 20 }}
+      footer={
+        state.edit
+          ? [
+              <Popconfirm
+                title={`${
+                  state.deletables.length
+                    ? "Empty reviews will be deleted. "
+                    : ""
+                }Are you sure to save the changes?`}
+                onConfirm={() => state.updateLocation(location._id)}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button key="save" icon={<EditOutlined />}>
+                  Save
+                </Button>
+              </Popconfirm>,
+              <Button
+                key="discard"
+                type="danger"
+                icon={<DeleteOutlined />}
+                onClick={() => state.viewLocation(-1)}
+              >
+                Discard
+              </Button>,
+            ]
+          : [
+              <Button
+                key="edit"
+                icon={<EditOutlined />}
+                onClick={() => state.toggleEdit(true)}
+              >
+                Edit
+              </Button>,
+              <Button
+                key="delete"
+                type="danger"
+                icon={<DeleteOutlined />}
+                onClick={() => state.viewLocation(-1)}
+              >
+                Delete
+              </Button>,
+            ]
+      }
     >
       {location.longitude !== "Not Added" && (
         <iframe
@@ -105,17 +129,32 @@ function LocationDetail({ location, visible, state }) {
           </Descriptions>
         </TabPane>
         <TabPane tab="Photos" key="2">
-          <PreviewGroup>
-            {location.photos.map((photo) => (
-              <Image width={200} height={200} src={photo} />
-            ))}
-          </PreviewGroup>
+          <ImgCrop rotate>
+              <Upload
+                action={urlHelper.uploadUrl}
+                name="file"
+                listType="picture-card"
+                fileList={location?.photos.map((item) => ({
+                  uid: "-1",
+                  name: "image.png",
+                  status: "done",
+                  url: urlHelper.fileUrl(item),
+                }))}
+                onChange={state.onPhotoChange}
+                onPreview={onPreview}
+              >
+                {location?.photos.length < 5 && "+ Upload"}
+              </Upload>
+            </ImgCrop>
           {location.photos.length === 0 && (
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
           )}
         </TabPane>
         <TabPane tab="Reviews" key="3">
-          <Reviews reviews={state.locationReviews} submitReview={state.submitReview} />
+          <Reviews
+            reviews={state.locationReviews}
+            submitReview={state.submitReview}
+          />
         </TabPane>
       </Tabs>
     </Modal>
