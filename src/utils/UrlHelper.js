@@ -30,11 +30,15 @@ class UrlHelper {
     }
 
     get locationUrl(){
-        return this._baseUrl+'campaign/location'
+        return this._baseUrl+'location'
+    }
+
+    get locationSaveUrl(){
+        return this._baseUrl+'location/save'
     }
 
     get reviewUrl(){
-        return this._baseUrl+'campaign/review'
+        return this._baseUrl+'review'
     }
 
     get commonUrl(){

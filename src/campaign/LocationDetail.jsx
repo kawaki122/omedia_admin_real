@@ -6,25 +6,30 @@ import {
   Descriptions,
   Tag,
   Button,
-  Image,
   Empty,
   Popconfirm,
   Upload,
+  Input,
+  Select,
+  Image,
 } from "antd";
 import ImgCrop from "antd-img-crop";
 import moment from "moment";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Reviews from "./Reviews";
 import { urlHelper } from "../utils/UrlHelper";
+import { locationEnum } from "../utils/constants";
 const { Text } = Typography;
 const { TabPane } = Tabs;
 const { Item } = Descriptions;
-const { PreviewGroup } = Image;
 
-function LocationDetail({ location, visible, state }) {
+function LocationDetail({ state }) {
+  const location = state.location;
+  const visible = Boolean(location);
   if (!visible) {
     return null;
   }
+
   const onPreview = async (file) => {
     let src = file.url;
     if (!src) {
@@ -40,10 +45,12 @@ function LocationDetail({ location, visible, state }) {
     imgWindow.document.write(image.outerHTML);
   };
 
+  const renderData = (data) => (data ? data : "Not Added");
+
   return (
     <Modal
       visible={visible}
-      onCancel={() => state.viewLocation(-1)}
+      onCancel={() => state.viewLocation(null)}
       width={800}
       style={{ top: 20 }}
       footer={
@@ -55,11 +62,15 @@ function LocationDetail({ location, visible, state }) {
                     ? "Empty reviews will be deleted. "
                     : ""
                 }Are you sure to save the changes?`}
-                onConfirm={() => state.updateLocation(location._id)}
+                onConfirm={() => state.updateLocation()}
                 okText="Yes"
                 cancelText="No"
               >
-                <Button key="save" icon={<EditOutlined />}>
+                <Button
+                  key="save"
+                  loading={state.updating}
+                  icon={<EditOutlined />}
+                >
                   Save
                 </Button>
               </Popconfirm>,
@@ -67,7 +78,7 @@ function LocationDetail({ location, visible, state }) {
                 key="discard"
                 type="danger"
                 icon={<DeleteOutlined />}
-                onClick={() => state.viewLocation(-1)}
+                onClick={() => state.toggleEdit(false)}
               >
                 Discard
               </Button>,
@@ -84,7 +95,7 @@ function LocationDetail({ location, visible, state }) {
                 key="delete"
                 type="danger"
                 icon={<DeleteOutlined />}
-                onClick={() => state.viewLocation(-1)}
+                onClick={() => state.viewLocation(null)}
               >
                 Delete
               </Button>,
@@ -112,41 +123,104 @@ function LocationDetail({ location, visible, state }) {
           <h2>Location not added</h2>
         </div>
       )}
-      <h1 style={{ marginBottom: "5px" }}>{location.title}</h1>
-      <Text type="secondary">{location.address}</Text>
+      {state.edit ? (
+        <Input
+          name="title"
+          value={location.title}
+          onChange={state.setLocationDetail}
+        />
+      ) : (
+        <h1 style={{ marginBottom: "5px" }}>{location.title}</h1>
+      )}
+      {state.edit ? (
+        <Input
+          name="address"
+          value={location.address}
+          onChange={state.setLocationDetail}
+        />
+      ) : (
+        <Text type="secondary">{renderData(location.address)}</Text>
+      )}
       <br />
       <Tabs defaultActiveKey="1" onChange={() => {}}>
         <TabPane tab="Basic" key="1">
           <Descriptions size="small" column={3}>
             <Item label="Status">
-              <Tag color="blue">{location.status}</Tag>
+              {state.edit ? (
+                <Select
+                  value={location.status}
+                  onChange={(e) =>
+                    state.setLocationDetail({
+                      target: { name: "status", value: e },
+                    })
+                  }
+                >
+                  <Select.Option value={locationEnum.PENDING}>
+                    {locationEnum.PENDING}
+                  </Select.Option>
+                  <Select.Option value={locationEnum.ACTIVE}>
+                    {locationEnum.ACTIVE}
+                  </Select.Option>
+                </Select>
+              ) : (
+                <Tag color="blue">{location.status}</Tag>
+              )}
             </Item>
-            <Item label="Size">{location.size}</Item>
-            <Item label="Trafic flow">{location.tflow}</Item>
+            <Item label="Size">
+              {state.edit ? (
+                <Input
+                  name="size"
+                  value={location.size}
+                  onChange={state.setLocationDetail}
+                />
+              ) : (
+                renderData(location.size)
+              )}
+            </Item>
+            <Item label="Trafic flow">
+              {state.edit ? (
+                <Input
+                  name="tflow"
+                  value={location.tflow}
+                  onChange={state.setLocationDetail}
+                />
+              ) : (
+                renderData(location.tflow)
+              )}
+            </Item>
             <Item label="Last updated">
               {moment(location.updatedAt).format("MMMM Do YYYY")}
             </Item>
           </Descriptions>
         </TabPane>
         <TabPane tab="Photos" key="2">
-          <ImgCrop rotate>
+          {state.edit ? (
+            <ImgCrop rotate>
               <Upload
                 action={urlHelper.uploadUrl}
                 name="file"
                 listType="picture-card"
-                fileList={location?.photos.map((item) => ({
-                  uid: "-1",
-                  name: "image.png",
+                fileList={location?.photos.map((item, i) => ({
+                  uid: i,
+                  name: item,
                   status: "done",
                   url: urlHelper.fileUrl(item),
                 }))}
-                onChange={state.onPhotoChange}
                 onPreview={onPreview}
+                onRemove={state.removePhoto}
+                customRequest={state.uploadLocationPic}
               >
                 {location?.photos.length < 5 && "+ Upload"}
               </Upload>
             </ImgCrop>
-          {location.photos.length === 0 && (
+          ) : (
+            <Image.PreviewGroup>
+              {location?.photos.map((item, i) => (
+                <Image key={i} width={200} src={urlHelper.fileUrl(item)} />
+              ))}
+            </Image.PreviewGroup>
+          )}
+          {location.photos.length === 0 && !state.edit && (
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
           )}
         </TabPane>

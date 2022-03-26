@@ -70,7 +70,7 @@ function Locations({
                     src="/logo192.png"
                   />
                 }
-                onClick={() => viewLocation(key)}
+                onClick={() => viewLocation(location)}
               >
                 <Meta title={location.title} description={location.address} />
               </Card>

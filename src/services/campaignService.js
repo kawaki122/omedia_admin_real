@@ -24,3 +24,7 @@ export const addReview = (body) => {
 export const deleteCampaign = (id) => {
     return axios.delete(urlHelper.campaignUrl+'?id='+id)
 }
+
+export const requestSaveLocation = (body) => {
+    return axios.post(urlHelper.locationSaveUrl, body)
+}

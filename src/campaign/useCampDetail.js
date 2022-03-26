@@ -1,6 +1,11 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { addReview, getCampaignComplete } from "../services/campaignService";
+import {
+  addReview,
+  getCampaignComplete,
+  requestSaveLocation,
+} from "../services/campaignService";
+import { uploadFile } from "../services/httpCommon";
 import { locationEnum } from "../utils/constants";
 import { urlHelper } from "../utils/UrlHelper";
 import useLocationFilter from "./useLocationFilter";
@@ -10,7 +15,7 @@ const initialData = {
   campaign: {
     _id: "",
     title: "",
-    status: '',
+    status: "",
     brandTitle: "",
     img: "",
     client: "",
@@ -24,16 +29,18 @@ const initialData = {
 };
 
 const useCampDetail = (camp) => {
-  const [backup, setBackup] = useState(initialData)
+  const [backup, setBackup] = useState(initialData);
   const [data, setData] = useState(initialData);
   const [config, setConfig] = useState({
     locationType: locationEnum.PENDING,
     search: "",
     loading: true,
     activeTab: "1",
-    locationIndex: -1,
+    location: null,
     edit: false,
     deletables: [],
+    deletablePic: "",
+    updating: false,
   });
 
   const locations = useLocationFilter(
@@ -43,6 +50,10 @@ const useCampDetail = (camp) => {
   );
 
   useEffect(() => {
+    initialize();
+  }, [camp]);
+
+  const initialize = () => {
     getCampaignComplete(camp.campaign)
       .then((result) => {
         const { campaign, locations, reviews } = result.data;
@@ -61,13 +72,14 @@ const useCampDetail = (camp) => {
               .asDays(),
             cities: campaign.cities.map((city) => city.title).join(", "),
           },
-          locations: locations.map((location) =>
-            Object.keys(location).reduce((result, name) => {
-              const value = location[name];
-              result[name] = value ? value : "Not Added";
-              return result;
-            }, {})
-          ),
+          locations,
+          // locations: locations.map((location) =>
+          //   Object.keys(location).reduce((result, name) => {
+          //     const value = location[name];
+          //     result[name] = value ? value : "Not Added";
+          //     return result;
+          //   }, {})
+          // ),
           reviews,
         };
 
@@ -79,47 +91,49 @@ const useCampDetail = (camp) => {
         setConfig((prev) => ({ ...prev, loading: false }));
         console.log(error);
       });
-  }, [camp]);
+  };
 
   const changeReviews = (info) => {
-    if(info.value==='undo') info.value = backup.reviews.find(item=>item._id===info._id)?.content
+    if (info.value === "undo")
+      info.value = backup.reviews.find(
+        (item) => item._id === info._id
+      )?.content;
 
-    setConfig(prev => {
+    setConfig((prev) => {
       let newDeletables = [...prev.deletables];
-      if(info.value) {
-        newDeletables = newDeletables.filter(item => item !== info._id)
+      if (info.value) {
+        newDeletables = newDeletables.filter((item) => item !== info._id);
       } else {
-        newDeletables.push(info._id)
+        newDeletables.push(info._id);
       }
-      return{...prev, deletables: newDeletables}
-    })
-    setData(prev => {
-      const index = prev.reviews.findIndex(item => item._id === info._id);
+      return { ...prev, deletables: newDeletables };
+    });
+    setData((prev) => {
+      const index = prev.reviews.findIndex((item) => item._id === info._id);
       const newRevs = [...prev.reviews];
       newRevs[index].content = info.value;
-      return { ...prev, reviews: newRevs }
-    })
-  }
+      return { ...prev, reviews: newRevs };
+    });
+  };
 
   const locationReviews = useReviewFilter(
-    data.locations[config.locationIndex],
+    config.location,
     data.reviews,
     backup.reviews,
-    {config, changeReviews},
+    { config, changeReviews }
   );
 
   const toggleEdit = (edit) => {
-    setConfig(prev => ({...prev, edit }))
-  }
+    setConfig((prev) => ({ ...prev, edit }));
+  };
 
   const submitReview = (review) => {
-    const loc = data.locations[config.locationIndex];
     return addReview({
       author: "Omedia",
       avatar: "omedia.png",
       content: review,
       campaign: data.campaign._id,
-      location: loc?._id,
+      location: config.location?._id,
     })
       .then((result) => {
         const { avatar, createdAt } = result.data;
@@ -142,33 +156,61 @@ const useCampDetail = (camp) => {
       });
   };
 
-  const updateLocation = (locationId) => {
+  const updateLocation = () => {
+    const loc = { ...config.location };
+    setConfig((prev) => ({ ...prev, updating: true }));
+    requestSaveLocation({...loc, reviews: data.reviews})
+      .then((result) => {
+        const locs = [...data.locations];
+        const newRevs = [...data.reviews];
+        const revs = newRevs.filter((item) => item.content !== "");
+        const index = locs.findIndex(item => item._id === loc._id)
+        locs[index] = loc;
+        setConfig((prev) => ({ ...prev, updating: false, deletables: [] }));
+        setBackup((prev) => ({ ...prev, locations: locs, reviews: revs }));
+        setData((prev) => ({ ...prev, locations: locs, reviews: revs }));
+      })
+      .catch((error) => {
+        setConfig((prev) => ({ ...prev, updating: false }));
+      });
+  };
 
-  }
-
-  const onPhotoChange = ({ fileList }) => {
-    console.log(fileList);
-    setData(async prev => {
-      debugger
-      const locationsNew = [...prev.locations];
-      locationsNew[config.locationIndex].photos = await fileList.map(async file => {
-        if(typeof file === 'string') {
-          return urlHelper.fileUrl(file);
-        }
-        return await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file.originFileObj);
-          reader.onload = () => resolve(reader.result);
+  const uploadLocationPic = ({ onSuccess, onError, file, onProgress }) => {
+    uploadFile(file, onProgress)
+      .then((response) => {
+        onSuccess("Ok");
+        setConfig((prev) => {
+          const loc = { ...prev.location };
+          loc.photos.push(response.data);
+          return { ...prev, location: loc };
         });
       })
-      return {...prev, locations: locationsNew}
-    })
+      .catch((e) => {
+        onError(e);
+      });
+  };
+
+  const removePhoto = (photo) => {
+    setConfig((prev) => {
+      const loc = { ...prev.location };
+      loc.photos = loc.photos.filter((i) => i !== photo.name);
+      return { ...prev, deletablePic: null, location: loc };
+    });
+  };
+
+  const setLocationDetail = (event) => {
+    const { name, value } = event.target;
+    setConfig((prev) => {
+      const loc = { ...prev.location };
+      loc[name] = value;
+      return { ...prev, location: loc };
+    });
   };
 
   const locationTypeChange = (type) => {
     setConfig((prev) => ({ ...prev, locationType: type }));
   };
-  
+
   const onLocationCreated = (location) => {
     setData((prev) => ({ ...prev, locations: [...prev.locations, location] }));
   };
@@ -182,7 +224,10 @@ const useCampDetail = (camp) => {
   };
 
   const viewLocation = (location) => {
-    setConfig((prev) => ({ ...prev, locationIndex: location }));
+    setConfig((prev) => ({
+      ...prev,
+      location,
+    }));
   };
 
   return {
@@ -196,8 +241,10 @@ const useCampDetail = (camp) => {
     viewLocation,
     submitReview,
     toggleEdit,
+    removePhoto,
+    setLocationDetail,
+    uploadLocationPic,
     updateLocation,
-    onPhotoChange,
     locationReviews,
   };
 };

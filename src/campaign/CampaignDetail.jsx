@@ -22,8 +22,6 @@ function CampaignDetail() {
       {state.activeTab === "2" && <Competition />}
       {state.activeTab === "3" && <Competition />}
       <LocationDetail
-        location={state.locations[state.locationIndex]}
-        visible={state.locationIndex > -1}
         state={state}
       />
     </div>
