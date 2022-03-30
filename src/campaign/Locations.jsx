@@ -1,17 +1,13 @@
-import { Select, Card, Carousel, Input } from "antd";
+import { Select, Card, Carousel, Input, Typography } from "antd";
 import Meta from "antd/lib/card/Meta";
 import React from "react";
-import {
-  EditOutlined,
-  EllipsisOutlined,
-  SettingOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
 import { locationEnum } from "../utils/constants";
 import UpsertLocation from "./UpsertLocation";
+import { urlHelper } from "../utils/UrlHelper";
 
 const { Option } = Select;
 const { Search } = Input;
+const { Paragraph } = Typography;
 
 function Locations({
   state: {
@@ -37,6 +33,7 @@ function Locations({
         <Select value={locationType} size="large" onChange={locationTypeChange}>
           <Option value={locationEnum.ACTIVE}>Active Locations</Option>
           <Option value={locationEnum.PENDING}>Pending Locations</Option>
+          <Option value={locationEnum.DISCARDED}>Discarded Locations</Option>
         </Select>
         <div style={{ display: "flex" }}>
           <Search
@@ -67,12 +64,19 @@ function Locations({
                 cover={
                   <img
                     style={{ width: "100%", height: "200px" }}
-                    src="/logo192.png"
+                    src={
+                      Boolean(location.photos.length)
+                        ? urlHelper.fileUrl(location.photos[0])
+                        : "/logo192.png"
+                    }
                   />
                 }
                 onClick={() => viewLocation(location)}
               >
-                <Meta title={location.title} description={location.address} />
+                <Meta
+                  title={<div className="text-ellipsis">{location.title}</div>}
+                  description={<div className="text-ellipsis--2">{location.address}</div>}
+                />
               </Card>
             )}
           </div>

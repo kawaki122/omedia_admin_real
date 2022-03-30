@@ -143,7 +143,7 @@ const useCampDetail = (camp) => {
             ...prev.reviews,
             {
               ...result.data,
-              avatar: urlHelper.fileUrl(avatar),
+              avatar: avatar,
               datetime: moment(createdAt).fromNow(),
             },
           ],
@@ -157,6 +157,9 @@ const useCampDetail = (camp) => {
   };
 
   const updateLocation = () => {
+    if(config.updating) {
+      return;
+    }
     const loc = { ...config.location };
     setConfig((prev) => ({ ...prev, updating: true }));
     requestSaveLocation({...loc, reviews: data.reviews})
@@ -166,7 +169,7 @@ const useCampDetail = (camp) => {
         const revs = newRevs.filter((item) => item.content !== "");
         const index = locs.findIndex(item => item._id === loc._id)
         locs[index] = loc;
-        setConfig((prev) => ({ ...prev, updating: false, deletables: [] }));
+        setConfig((prev) => ({ ...prev, updating: false, deletables: [], edit: false }));
         setBackup((prev) => ({ ...prev, locations: locs, reviews: revs }));
         setData((prev) => ({ ...prev, locations: locs, reviews: revs }));
       })

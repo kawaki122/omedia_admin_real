@@ -1,7 +1,7 @@
-import React from 'react';
-import { Layout, Menu } from 'antd';
-import { BorderOuterOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Layout, Menu } from "antd";
+import { BorderOuterOutlined, SettingOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -11,7 +11,7 @@ function SidebarLayout({ children }) {
       <Sider
         breakpoint="lg"
         collapsedWidth="0"
-        onBreakpoint={broken => {
+        onBreakpoint={(broken) => {
           console.log(broken);
         }}
         onCollapse={(collapsed, type) => {
@@ -19,26 +19,27 @@ function SidebarLayout({ children }) {
         }}
       >
         <div className="logo" />
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={['0']}>
-        <Menu.Item key="0" icon={<BorderOuterOutlined />}>
-            <Link to='/'>
-              Dashboard
-            </Link>
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={["0"]}>
+          <Menu.Item key="0" icon={<BorderOuterOutlined />}>
+            <Link to="/">Dashboard</Link>
           </Menu.Item>
           <Menu.Item key="1" icon={<BorderOuterOutlined />}>
-            <Link to='/campaigns'>
-              Campaign
-            </Link>
+            <Link to="/campaigns">Campaign</Link>
+          </Menu.Item>
+          <Menu.Item key="2" icon={<SettingOutlined />}>
+            <Link to="/settings">Settings</Link>
           </Menu.Item>
         </Menu>
       </Sider>
       <Layout>
-        <Header className="site-layout-sub-header-background" style={{ padding: 0 }}>
-        </Header>
-        <Content style={{ margin: '24px 16px 0' }}>
-          {children}
-        </Content>
-        <Footer style={{ textAlign: 'center' }}>O Tracker ©2022 Created by Omedia</Footer>
+        <Header
+          className="site-layout-sub-header-background"
+          style={{ padding: 0 }}
+        ></Header>
+        <Content style={{ margin: "24px 16px 0" }}>{children}</Content>
+        <Footer style={{ textAlign: "center" }}>
+          O Tracker ©2022 Created by Omedia
+        </Footer>
       </Layout>
     </Layout>
   );

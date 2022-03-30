@@ -114,11 +114,11 @@ function Campaign() {
                     align: 'right',
                     render: (text, record) => {
                         return <>
-                            <Delete
+                            {/* <Delete
                                 onDelete={() => handleRemove(record)}
                                 deleting={state.deleting && record._id === state.selected}
                             />
-                            &nbsp;|&nbsp;
+                            &nbsp;|&nbsp; */}
                             <UpsertCampaign initValues={record} onCreate={handleUpdate}>
                                 Edit
                             </UpsertCampaign>

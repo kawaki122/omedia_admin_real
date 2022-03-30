@@ -12,10 +12,11 @@ import {
   Input,
   Select,
   Image,
+  Space,
 } from "antd";
 import ImgCrop from "antd-img-crop";
 import moment from "moment";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, CloseOutlined } from "@ant-design/icons";
 import Reviews from "./Reviews";
 import { urlHelper } from "../utils/UrlHelper";
 import { locationEnum } from "../utils/constants";
@@ -77,10 +78,10 @@ function LocationDetail({ state }) {
               <Button
                 key="discard"
                 type="danger"
-                icon={<DeleteOutlined />}
+                icon={<CloseOutlined />}
                 onClick={() => state.toggleEdit(false)}
               >
-                Discard
+                Cancel
               </Button>,
             ]
           : [
@@ -102,7 +103,7 @@ function LocationDetail({ state }) {
             ]
       }
     >
-      {location.longitude !== "Not Added" && (
+      {location.longitude ? (
         <iframe
           height="360"
           style={{ border: "0px", width: "100%" }}
@@ -110,8 +111,7 @@ function LocationDetail({ state }) {
           allowfullscreen
           src={`https://maps.google.com/maps?q=${location.longitude},${location.latitude}&hl=es;z=14&amp;output=embed`}
         ></iframe>
-      )}
-      {location.longitude === "Not Added" && (
+      ) : (
         <div
           style={{
             height: "360px",
@@ -161,6 +161,9 @@ function LocationDetail({ state }) {
                   <Select.Option value={locationEnum.ACTIVE}>
                     {locationEnum.ACTIVE}
                   </Select.Option>
+                  <Select.Option value={locationEnum.DISCARDED}>
+                    {locationEnum.DISCARDED}
+                  </Select.Option>
                 </Select>
               ) : (
                 <Tag color="blue">{location.status}</Tag>
@@ -194,8 +197,9 @@ function LocationDetail({ state }) {
           </Descriptions>
         </TabPane>
         <TabPane tab="Photos" key="2">
+          <div style={{overflow: 'auto'}}>
           {state.edit ? (
-            <ImgCrop rotate>
+            // <ImgCrop rotate>
               <Upload
                 action={urlHelper.uploadUrl}
                 name="file"
@@ -212,17 +216,20 @@ function LocationDetail({ state }) {
               >
                 {location?.photos.length < 5 && "+ Upload"}
               </Upload>
-            </ImgCrop>
+            // </ImgCrop>
           ) : (
-            <Image.PreviewGroup>
+            // <Image.PreviewGroup>
+              <Space size={2}>
               {location?.photos.map((item, i) => (
-                <Image key={i} width={200} src={urlHelper.fileUrl(item)} />
+                <Image key={i} width={200} height={200} src={urlHelper.fileUrl(item)} />
               ))}
-            </Image.PreviewGroup>
+              </Space>
+            //  </Image.PreviewGroup> 
           )}
           {location.photos.length === 0 && !state.edit && (
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
           )}
+          </div>
         </TabPane>
         <TabPane tab="Reviews" key="3">
           <Reviews
