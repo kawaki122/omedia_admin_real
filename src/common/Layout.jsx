@@ -1,11 +1,33 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Layout, Menu } from "antd";
 import { BorderOuterOutlined, SettingOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const { Header, Footer, Sider, Content } = Layout;
 
 function SidebarLayout({ children }) {
+  const location = useLocation();
+  if (location.pathname === "/") {
+    return (
+      <Layout style={{ minHeight: "100vh" }}>
+        <Content
+          style={{
+            margin: "24px 16px 0",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flex: 1,
+          }}
+        >
+          {children}
+        </Content>
+        <Footer style={{ textAlign: "center" }}>
+          O Tracker ©2022 Created by Omedia
+        </Footer>
+      </Layout>
+    );
+  }
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider

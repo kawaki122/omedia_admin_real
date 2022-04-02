@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import Splash from "./common/Splash";
 import CampaignDetail from "./campaign/CampaignDetail";
 import Settings from "./settings/Settings";
+import Login from "./common/Login";
 
 function Routes() {
   const { splash } = useSelector((item) => item.dashboard);
@@ -19,6 +20,9 @@ function Routes() {
       <SidebarLayout>
         <Switch>
           <Route exact path="/">
+            <Login />
+          </Route>
+          <Route path="/dashboard">
             <Dashboard />
           </Route>
           <Route path="/campaigns">
