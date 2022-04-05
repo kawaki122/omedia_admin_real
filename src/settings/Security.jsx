@@ -1,11 +1,29 @@
-import { Card, Form, Input, Button, Typography, Collapse } from "antd";
-import React from "react";
+import { Card, Form, Input, Button, Typography, Collapse, message } from "antd";
+import React, { useState } from "react";
+import { updatePassword } from "../services/userService";
 const { Title } = Typography;
 const { Panel } = Collapse;
 
 function Security() {
+  const [loading, setLoading] = useState(false);
   const onFinish = (values) => {
     console.log(values);
+    setLoading(true);
+    updatePassword({
+      password: values.password,
+      newPassword: values.newPassword,
+    })
+      .then((result) => {
+        setLoading(false);
+        message.success("Password changed.");
+      })
+      .catch((error) => {
+        console.log(error.response);
+        message.error(
+          error.response?.data.message || "Error while changing password"
+        );
+        setLoading(false);
+      });
   };
   console.log("render");
   return (
@@ -26,10 +44,6 @@ function Security() {
                   {
                     required: true,
                     message: "Please input your current password!",
-                  },
-                  {
-                    validator: () => true,
-                    message: "test",
                   },
                 ]}
               >
@@ -75,7 +89,12 @@ function Security() {
               </Form.Item>
 
               <Form.Item>
-                <Button type="primary" block htmlType="submit">
+                <Button
+                  loading={loading}
+                  type="primary"
+                  block
+                  htmlType="submit"
+                >
                   Submit
                 </Button>
               </Form.Item>

@@ -1,13 +1,31 @@
 import React, { Fragment } from "react";
-import { Layout, Menu } from "antd";
-import { BorderOuterOutlined, SettingOutlined } from "@ant-design/icons";
-import { Link, useLocation } from "react-router-dom";
+import { Button, Layout, Menu } from "antd";
+import {
+  BorderOuterOutlined,
+  SettingOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { Link, useHistory } from "react-router-dom";
+import { storageKeyEnum } from "../utils/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { setInitialLoaded } from "../store/reducers/dashSlice";
 
 const { Header, Footer, Sider, Content } = Layout;
 
 function SidebarLayout({ children }) {
-  const location = useLocation();
-  if (location.pathname === "/") {
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.dashboard.user);
+
+  const handleLogout = () => {
+    dispatch(
+      setInitialLoaded({ cities: [], brands: [], clients: [], user: null })
+    );
+    localStorage.removeItem(storageKeyEnum.access_token);
+    history.push("/");
+  };
+
+  if (!Boolean(user?.email)) {
     return (
       <Layout style={{ minHeight: "100vh" }}>
         <Content
@@ -43,13 +61,16 @@ function SidebarLayout({ children }) {
         <div className="logo" />
         <Menu theme="dark" mode="inline" defaultSelectedKeys={["0"]}>
           <Menu.Item key="0" icon={<BorderOuterOutlined />}>
-            <Link to="/">Dashboard</Link>
+            <Link to="/dashboard">Dashboard</Link>
           </Menu.Item>
           <Menu.Item key="1" icon={<BorderOuterOutlined />}>
             <Link to="/campaigns">Campaign</Link>
           </Menu.Item>
           <Menu.Item key="2" icon={<SettingOutlined />}>
             <Link to="/settings">Settings</Link>
+          </Menu.Item>
+          <Menu.Item key="3" onClick={handleLogout} icon={<UserOutlined />}>
+            Logout
           </Menu.Item>
         </Menu>
       </Sider>

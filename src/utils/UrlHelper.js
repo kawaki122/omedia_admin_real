@@ -40,12 +40,16 @@ class UrlHelper {
     return this._baseUrl + "review";
   }
 
-  get commonUrl() {
-    return this._baseUrl + "common";
+  commonUrl(param) {
+    return this._baseUrl + "common/" + param;
   }
 
   authUrl(param) {
     return `${this._baseUrl}auth/${param}`;
+  }
+
+  userUrl(param) {
+    return `${this._baseUrl}user/${param}`;
   }
 }
 

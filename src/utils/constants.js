@@ -21,3 +21,7 @@ export const getHttpErrorMessage = (error, generic) => {
     return generic;
   }
 };
+
+export const storageKeyEnum = {
+  access_token: "access_token",
+};

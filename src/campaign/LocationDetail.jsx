@@ -13,6 +13,8 @@ import {
   Select,
   Image,
   Space,
+  Row,
+  Col,
 } from "antd";
 import ImgCrop from "antd-img-crop";
 import moment from "moment";
@@ -197,9 +199,9 @@ function LocationDetail({ state }) {
           </Descriptions>
         </TabPane>
         <TabPane tab="Photos" key="2">
-          <div style={{overflow: 'auto'}}>
-          {state.edit ? (
-            // <ImgCrop rotate>
+          <div>
+            {state.edit ? (
+              // <ImgCrop rotate>
               <Upload
                 action={urlHelper.uploadUrl}
                 name="file"
@@ -216,19 +218,23 @@ function LocationDetail({ state }) {
               >
                 {location?.photos.length < 5 && "+ Upload"}
               </Upload>
-            // </ImgCrop>
-          ) : (
-            // <Image.PreviewGroup>
-              <Space size={2}>
-              {location?.photos.map((item, i) => (
-                <Image key={i} width={200} height={200} src={urlHelper.fileUrl(item)} />
-              ))}
-              </Space>
-            //  </Image.PreviewGroup> 
-          )}
-          {location.photos.length === 0 && !state.edit && (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-          )}
+            ) : (
+              <Row>
+                {location?.photos.map((item, i) => (
+                  <Col span={7}>
+                    <Image
+                      key={i}
+                      width={200}
+                      height={200}
+                      src={urlHelper.fileUrl(item)}
+                    />
+                  </Col>
+                ))}
+              </Row>
+            )}
+            {location.photos.length === 0 && !state.edit && (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </div>
         </TabPane>
         <TabPane tab="Reviews" key="3">
