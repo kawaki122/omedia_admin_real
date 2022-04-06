@@ -52,7 +52,7 @@ class UrlHelper {
     return `${this._baseUrl}user/${param}`;
   }
 }
-
+//singleton
 export const urlHelper = new UrlHelper(
   process.env.API_URL || "http://localhost:8080/"
 );
