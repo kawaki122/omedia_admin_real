@@ -53,4 +53,6 @@ class UrlHelper {
   }
 }
 
-export const urlHelper = new UrlHelper("http://localhost:4000/");
+export const urlHelper = new UrlHelper(
+  process.env.API_URL || "http://localhost:8080/"
+);
