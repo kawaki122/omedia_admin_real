@@ -16,7 +16,7 @@ function Splash() {
   useEffect(() => {
     setTimeout(() => {
       dispatch(loadInitial()).then((result) => {
-        debugger;
+        console.log("envs", process.env.API_URL);
         if (!result) {
           localStorage.removeItem(storageKeyEnum.access_token);
           history.push("/");
