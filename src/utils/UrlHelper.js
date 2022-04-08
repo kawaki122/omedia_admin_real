@@ -54,5 +54,5 @@ class UrlHelper {
 }
 //singleton
 export const urlHelper = new UrlHelper(
-  process.env.API_URL || "http://localhost:8080/"
+  process.env.REACT_APP_API_URL || "http://localhost:8080/"
 );
