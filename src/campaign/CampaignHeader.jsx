@@ -23,21 +23,23 @@ function CampaignHeader({ activeTab, setActiveTab, campaign }) {
         breadcrumb={{ routes }}
         onBack={() => window.history.back()}
         title={campaign.title}
-        subTitle={campaign.brandTitle+"'s Campaign details"}
+        subTitle={campaign.brandTitle + "'s Campaign details"}
         avatar={{
           src: urlHelper.fileUrl(campaign.img),
         }}
         tags={<Tag color="blue">{campaign.status}</Tag>}
         extra={[
-          <Button key="2">
-            Complete
-          </Button>,
+          <Button key="2">Complete</Button>,
           <Button key="1" type="danger">
             Cancel
           </Button>,
         ]}
         footer={
-          <Tabs defaultActiveKey="1" activeKey={activeTab} onChange={setActiveTab}>
+          <Tabs
+            defaultActiveKey="1"
+            activeKey={activeTab}
+            onChange={setActiveTab}
+          >
             <TabPane tab="Locations" key="1" />
             <TabPane tab="Complaints" key="2" />
             <TabPane tab="Competition" key="3" />
@@ -45,8 +47,12 @@ function CampaignHeader({ activeTab, setActiveTab, campaign }) {
         }
       >
         <Descriptions size="small" column={3}>
-          <Descriptions.Item label="Client">{campaign.client}</Descriptions.Item>
-          <Descriptions.Item label="Brand">{campaign.brandTitle}</Descriptions.Item>
+          <Descriptions.Item label="Client">
+            {campaign.client}
+          </Descriptions.Item>
+          <Descriptions.Item label="Brand">
+            {campaign.brandTitle}
+          </Descriptions.Item>
           <Descriptions.Item label="Cities">
             {campaign.cities}
           </Descriptions.Item>
@@ -61,7 +67,6 @@ function CampaignHeader({ activeTab, setActiveTab, campaign }) {
           </Descriptions.Item>
         </Descriptions>
       </PageHeader>
-      
     </div>
   );
 }

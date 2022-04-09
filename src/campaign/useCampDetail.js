@@ -157,19 +157,24 @@ const useCampDetail = (camp) => {
   };
 
   const updateLocation = () => {
-    if(config.updating) {
+    if (config.updating) {
       return;
     }
     const loc = { ...config.location };
     setConfig((prev) => ({ ...prev, updating: true }));
-    requestSaveLocation({...loc, reviews: data.reviews})
+    requestSaveLocation({ ...loc, reviews: data.reviews })
       .then((result) => {
         const locs = [...data.locations];
         const newRevs = [...data.reviews];
         const revs = newRevs.filter((item) => item.content !== "");
-        const index = locs.findIndex(item => item._id === loc._id)
+        const index = locs.findIndex((item) => item._id === loc._id);
         locs[index] = loc;
-        setConfig((prev) => ({ ...prev, updating: false, deletables: [], edit: false }));
+        setConfig((prev) => ({
+          ...prev,
+          updating: false,
+          deletables: [],
+          edit: false,
+        }));
         setBackup((prev) => ({ ...prev, locations: locs, reviews: revs }));
         setData((prev) => ({ ...prev, locations: locs, reviews: revs }));
       })

@@ -12,21 +12,21 @@ function UpsertBrand({ onCreate, initValues, children }) {
     visible: false,
     confirming: false,
     loading: false,
-    file: ''
+    file: "",
   });
 
   const showModal = () => {
     if (initValues) {
       form.setFieldsValue({
         title: initValues.title,
-        client: initValues.client||"",
+        client: initValues.client || "",
         brandId: initValues._id,
       });
     }
     setState((prev) => ({
       ...prev,
       visible: true,
-      ...(initValues && { file: initValues.img })
+      ...(initValues && { file: initValues.img }),
     }));
   };
 
@@ -50,7 +50,7 @@ function UpsertBrand({ onCreate, initValues, children }) {
           ...prev,
           confirming: false,
           visible: false,
-          file: '',
+          file: "",
         }));
       })
       .catch((e) => {
@@ -62,11 +62,11 @@ function UpsertBrand({ onCreate, initValues, children }) {
 
   const handleCancel = () => {
     form.resetFields();
-    setState((prev) => ({ ...prev, visible: false, file: '' }));
+    setState((prev) => ({ ...prev, visible: false, file: "" }));
   };
 
   const handleChange = (info) => {
-      console.log(info)
+    console.log(info);
     if (info.file.status === "uploading") {
       setState((p) => ({ ...p, loading: true }));
       return;
@@ -141,7 +141,7 @@ function UpsertBrand({ onCreate, initValues, children }) {
               },
             ]}
           >
-            <Input />
+            <Input maxLength={50} />
           </Form.Item>
 
           <Form.Item hidden={true} name="brandId" />

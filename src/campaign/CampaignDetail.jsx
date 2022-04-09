@@ -21,9 +21,7 @@ function CampaignDetail() {
       {state.activeTab === "1" && <Locations state={state} />}
       {state.activeTab === "2" && <Competition />}
       {state.activeTab === "3" && <Competition />}
-      <LocationDetail
-        state={state}
-      />
+      <LocationDetail state={state} />
     </div>
   );
 }
